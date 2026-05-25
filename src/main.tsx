@@ -2,7 +2,7 @@ import React, { PointerEvent, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-type Theme = 'atelier' | 'retro95' | 'glass';
+type Theme = 'atelier' | 'pixel' | 'glass';
 type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'terminal' | 'settings';
 
 type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean };
@@ -117,8 +117,8 @@ function StartMenu({ openApp }: { openApp: (id: AppId) => void }) {
 }
 
 function WindowContent({ id, theme, setTheme }: { id: AppId; theme: Theme; setTheme: (theme: Theme) => void }) {
-  if (id === 'settings') return <div className="content"><h2>Theme Lab</h2><p>상표/로고 복제 없이 자체 레트로 톤으로 구성했습니다.</p><div className="theme-picker">{(['atelier','retro95','glass'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
-  if (id === 'terminal') return <div className="content terminal"><p>$ boot eureka-os</p><p>status: local MVP ready</p><p>stack: React + Vite + CSS windows</p><p>domain: os.eureka.pe.kr</p><p>note: HTTPS host 설정 확인 필요</p></div>;
+  if (id === 'settings') return <div className="content"><h2>Theme Lab</h2><p>상표/로고 복제 없이 자체 레트로 톤으로 구성했습니다.</p><div className="theme-picker">{(['atelier','pixel','glass'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
+  if (id === 'terminal') return <div className="content terminal"><p>$ boot eureka-os</p><p>status: local MVP ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>note: HTTPS host 설정 확인 필요</p></div>;
   if (id === 'documents') return <div className="content"><h2>Documents</h2><ul><li>프로젝트 링크 허브</li><li>릴리즈 노트</li><li>운영 문서</li></ul></div>;
   if (id === 'notes') return <div className="content"><h2>Scratchpad</h2><textarea defaultValue={'오늘의 작업\n- Eureka OS MVP 생성\n- GitHub repo 준비\n- Caddy 배포 확인'} /></div>;
   return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row"><div>Launch</div><div>Docs</div><div>Status</div></div></div>;

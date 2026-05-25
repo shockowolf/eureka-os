@@ -3,7 +3,7 @@
 body { margin: 0; overflow: hidden; }
 button { font: inherit; color: inherit; }
 .desktop { min-height: 100vh; position: relative; overflow: hidden; background: radial-gradient(circle at 20% 20%, #22577a 0, transparent 32%), linear-gradient(135deg, #07111f, #1f1147 55%, #09121f); }
-.theme-retro95 { background: linear-gradient(135deg, #008080, #024f57); --panel: #c0c7cf; --text-dark: #15202b; }
+.theme-pixel { background: linear-gradient(135deg, #008080, #024f57); --panel: #c0c7cf; --text-dark: #15202b; }
 .theme-glass { background: radial-gradient(circle at 80% 20%, #7c3aed 0, transparent 28%), linear-gradient(135deg, #111827, #0f766e); }
 .wallpaper-grid { position: absolute; inset: 0; opacity: .22; background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(circle, black, transparent 76%); }
 .hero-panel { position: absolute; right: 5vw; top: 6vh; width: min(380px, 42vw); padding: 28px; border: 1px solid rgba(255,255,255,.2); background: rgba(5, 12, 24, .42); backdrop-filter: blur(18px); border-radius: 26px; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
@@ -15,13 +15,13 @@ button { font: inherit; color: inherit; }
 .desktop-icon span { width: 58px; height: 58px; display: grid; place-items: center; border: 2px solid; border-radius: 18px; background: rgba(255,255,255,.12); box-shadow: inset 0 0 18px rgba(255,255,255,.08), 0 12px 28px rgba(0,0,0,.24); font-size: 26px; }
 .desktop-icon b { font-size: 12px; }
 .window { position: absolute; width: min(520px, 88vw); min-height: 300px; transform: translate(-15%, -10%); border: 1px solid rgba(255,255,255,.22); border-radius: 18px; background: rgba(9, 17, 31, .84); box-shadow: 0 28px 80px rgba(0,0,0,.42); backdrop-filter: blur(20px); overflow: hidden; }
-.theme-retro95 .window { border-radius: 0; border: 2px outset #fff; background: var(--panel); color: var(--text-dark); backdrop-filter: none; }
+.theme-pixel .window { border-radius: 0; border: 2px outset #fff; background: var(--panel); color: var(--text-dark); backdrop-filter: none; }
 .titlebar { height: 42px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px 0 14px; background: linear-gradient(90deg, color-mix(in srgb, var(--accent), #111 40%), rgba(255,255,255,.08)); border-bottom: 1px solid rgba(255,255,255,.16); font-weight: 800; }
 .titlebar div { display: flex; gap: 9px; align-items: center; }
 .titlebar nav { display: flex; gap: 6px; }
 .titlebar button { width: 28px; height: 26px; border: 1px solid rgba(255,255,255,.32); background: rgba(0,0,0,.18); border-radius: 8px; cursor: pointer; }
 .content { padding: 22px; color: #eaf6ff; }
-.theme-retro95 .content { color: #111827; }
+.theme-pixel .content { color: #111827; }
 .content h2 { margin: 0 0 10px; font-size: 28px; letter-spacing: -0.04em; }
 .content p, .content li { line-height: 1.65; color: inherit; opacity: .86; }
 .terminal { font-family: 'SFMono-Regular', Consolas, monospace; color: #bbf7d0; background: #020617; min-height: 258px; }
@@ -32,7 +32,7 @@ textarea { width: 100%; min-height: 155px; resize: vertical; border: 1px solid r
 .theme-picker button { cursor: pointer; }
 .theme-picker .active { outline: 2px solid #93c5fd; }
 .taskbar { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 58px; display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid rgba(255,255,255,.2); border-radius: 18px; background: rgba(4,10,22,.72); backdrop-filter: blur(18px); box-shadow: 0 14px 40px rgba(0,0,0,.35); }
-.theme-retro95 .taskbar { border-radius: 0; border: 2px outset #fff; background: #c0c7cf; color: #111827; backdrop-filter: none; }
+.theme-pixel .taskbar { border-radius: 0; border: 2px outset #fff; background: #c0c7cf; color: #111827; backdrop-filter: none; }
 .start, .tasks button, .start-menu button { border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.1); border-radius: 12px; padding: 10px 14px; cursor: pointer; }
 .start { font-weight: 900; background: linear-gradient(135deg, #2563eb, #7c3aed); }
 .tasks { flex: 1; display: flex; gap: 8px; overflow: hidden; }
