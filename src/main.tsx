@@ -2,19 +2,19 @@ import React, { PointerEvent, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-type Theme = 'atelier' | 'pixel' | 'glass';
+type Theme = 'classic-gray' | 'meadow-blue' | 'atelier';
 type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'terminal' | 'settings';
 
 type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean };
 type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
 
 const apps: Record<AppId, { title: string; icon: string; accent: string; summary: string }> = {
-  agentroom: { title: 'AgentRoom', icon: '◇', accent: '#7dd3fc', summary: 'AI 동료들과 프로젝트를 굴리는 작업방입니다.' },
-  uniplan: { title: 'UniPlan', icon: '▣', accent: '#a7f3d0', summary: '계획, 일정, 아이디어를 하나의 보드로 모읍니다.' },
-  documents: { title: 'Documents', icon: '▤', accent: '#fde68a', summary: '프로젝트 문서와 링크를 정리하는 서랍입니다.' },
-  notes: { title: 'Notes', icon: '✧', accent: '#f0abfc', summary: '빠른 메모와 작업 로그를 적어두는 노트입니다.' },
-  terminal: { title: 'About Terminal', icon: '▸', accent: '#86efac', summary: 'Eureka OS 상태와 빌드 정보를 보여줍니다.' },
-  settings: { title: 'Settings', icon: '◌', accent: '#c4b5fd', summary: '테마와 데스크톱 분위기를 조절합니다.' },
+  agentroom: { title: 'AI 동료 작업방', icon: '◇', accent: '#7dd3fc', summary: 'AgentRoom: AI 동료들과 프로젝트를 굴리는 작업방입니다.' },
+  uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
+  documents: { title: '문서 서랍', icon: '▤', accent: '#fde68a', summary: 'Documents: 프로젝트 문서와 링크를 차곡차곡 넣어두는 서랍입니다.' },
+  notes: { title: '작업 노트', icon: '✧', accent: '#f0abfc', summary: 'Notes: 빠른 메모와 오늘의 작업 흔적을 적어두는 노트입니다.' },
+  terminal: { title: '시스템 로그', icon: '▸', accent: '#86efac', summary: 'Terminal: Eureka OS 상태와 빌드 로그를 보여줍니다.' },
+  settings: { title: '분위기 설정', icon: '◌', accent: '#c4b5fd', summary: 'Settings: 테마와 데스크톱 분위기를 조절합니다.' },
 };
 
 const initialWindows: WindowState[] = [
@@ -23,7 +23,7 @@ const initialWindows: WindowState[] = [
 ];
 
 function App() {
-  const [theme, setTheme] = useState<Theme>('atelier');
+  const [theme, setTheme] = useState<Theme>('classic-gray');
   const [windows, setWindows] = useState<WindowState[]>(initialWindows);
   const [startOpen, setStartOpen] = useState(false);
   const [dragging, setDragging] = useState<DragState | null>(null);
@@ -109,18 +109,28 @@ function App() {
   );
 }
 
+const launcherActions: Record<AppId, string> = {
+  agentroom: '작업방 열기',
+  uniplan: '계획 보기',
+  documents: '문서 서랍',
+  notes: '작업 로그',
+  terminal: '시스템 로그',
+  settings: '테마 바꾸기',
+};
+
 function StartMenu({ openApp }: { openApp: (id: AppId) => void }) {
   return <aside className="start-menu">
     <strong>Eureka Launcher</strong>
-    {(Object.keys(apps) as AppId[]).map((id) => <button key={id} onClick={() => openApp(id)}><span>{apps[id].icon}</span>{apps[id].title}</button>)}
+    <p>오늘 열 작업을 고르세요</p>
+    {(Object.keys(apps) as AppId[]).map((id) => <button key={id} onClick={() => openApp(id)}><span>{apps[id].icon}</span>{launcherActions[id]}</button>)}
   </aside>;
 }
 
 function WindowContent({ id, theme, setTheme }: { id: AppId; theme: Theme; setTheme: (theme: Theme) => void }) {
-  if (id === 'settings') return <div className="content"><h2>Theme Lab</h2><p>상표/로고 복제 없이 자체 레트로 톤으로 구성했습니다.</p><div className="theme-picker">{(['atelier','pixel','glass'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
-  if (id === 'terminal') return <div className="content terminal"><p>$ boot eureka-os</p><p>status: local MVP ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>note: HTTPS host 설정 확인 필요</p></div>;
-  if (id === 'documents') return <div className="content"><h2>Documents</h2><ul><li>프로젝트 링크 허브</li><li>릴리즈 노트</li><li>운영 문서</li></ul></div>;
-  if (id === 'notes') return <div className="content"><h2>Scratchpad</h2><textarea defaultValue={'오늘의 작업\n- Eureka OS MVP 생성\n- GitHub repo 준비\n- Caddy 배포 확인'} /></div>;
+  if (id === 'settings') return <div className="content"><h2>분위기 설정</h2><p>상표/로고 복제 없이 Eureka OS 자체 레트로 작업실 톤으로 구성했습니다.</p><div className="theme-picker">{(['classic-gray','meadow-blue','atelier'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
+  if (id === 'terminal') return <div className="content terminal"><p>$ boot eureka-os</p><p>status: local MVP ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>note: os 전용 Caddy 호스트로 배포 대기</p></div>;
+  if (id === 'documents') return <div className="content"><h2>문서 서랍</h2><ul><li>프로젝트 링크 허브</li><li>릴리즈 노트</li><li>운영 문서</li></ul></div>;
+  if (id === 'notes') return <div className="content"><h2>작업 노트</h2><textarea defaultValue={'오늘의 작업\n- Eureka OS MVP 생성\n- GitHub repo 준비\n- os.eureka.pe.kr 배포 확인'} /></div>;
   return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row"><div>Launch</div><div>Docs</div><div>Status</div></div></div>;
 }
 
