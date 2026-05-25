@@ -37,6 +37,7 @@ const projectLinks: LinkTarget[] = [
 ];
 
 const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
+const appOrder = Object.keys(apps) as AppId[];
 
 function App() {
   const [theme, setThemeState] = useState<Theme>(() => (localStorage.getItem('eureka-theme') as Theme) || 'classic-gray');
@@ -45,6 +46,7 @@ function App() {
   const [dragging, setDragging] = useState<DragState | null>(null);
   const [now, setNow] = useState(() => new Date());
   const maxZ = useMemo(() => Math.max(0, ...windows.map((w) => w.z)), [windows]);
+  const focusedWindow = useMemo(() => windows.filter((w) => !w.minimized).sort((a, b) => b.z - a.z)[0], [windows]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 15_000);
@@ -75,6 +77,48 @@ function App() {
   const minimizeWindow = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
   const toggleMaximize = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, maximized: !w.maximized, minimized: false, z: maxZ + 1 } : w)));
 
+  useEffect(() => {
+    const isEditable = (target: EventTarget | null) => target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (isEditable(event.target)) return;
+      const modifier = event.metaKey || event.ctrlKey;
+
+      if (modifier && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setStartOpen((value) => !value);
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        if (startOpen) {
+          event.preventDefault();
+          setStartOpen(false);
+        }
+        return;
+      }
+
+      if (event.altKey && /^[1-7]$/.test(event.key)) {
+        event.preventDefault();
+        openApp(appOrder[Number(event.key) - 1]);
+        return;
+      }
+
+      if (!focusedWindow || !modifier) return;
+      if (event.key.toLowerCase() === 'w') {
+        event.preventDefault();
+        closeWindow(focusedWindow.id);
+      } else if (event.key.toLowerCase() === 'm') {
+        event.preventDefault();
+        minimizeWindow(focusedWindow.id);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        toggleMaximize(focusedWindow.id);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [focusedWindow, startOpen, maxZ]);
+
   const beginDrag = (event: PointerEvent<HTMLElement>, win: WindowState) => {
     if (win.maximized || (event.target as HTMLElement).closest('button')) return;
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -102,8 +146,8 @@ function App() {
       </section>
 
       <div className="icons" aria-label="desktop apps">
-        {(Object.keys(apps) as AppId[]).map((id) => (
-          <button className="desktop-icon" key={id} onDoubleClick={() => openApp(id)} onClick={() => openApp(id)}>
+        {appOrder.map((id, index) => (
+          <button className="desktop-icon" key={id} aria-label={`${apps[id].title} 열기, Alt+${index + 1}`} title={`Alt+${index + 1}`} onDoubleClick={() => openApp(id)} onClick={() => openApp(id)}>
             <span style={{ borderColor: apps[id].accent }}>{apps[id].icon}</span>
             <b>{apps[id].title}</b>
           </button>
@@ -130,10 +174,10 @@ function App() {
       ))}
 
       <footer className="taskbar">
-        <button className="start" onClick={() => setStartOpen((v) => !v)}>◆ Eureka</button>
+        <button className="start" aria-expanded={startOpen} aria-haspopup="menu" title="Ctrl/⌘+K" onClick={() => setStartOpen((v) => !v)}>◆ Eureka</button>
         {startOpen && <StartMenu openApp={openApp} />}
         <div className="tasks">
-          {windows.map((w) => <button className={w.minimized ? 'is-minimized' : ''} key={w.id} onClick={() => openApp(w.id)}>{apps[w.id].title}</button>)}
+          {windows.map((w) => <button className={w.minimized ? 'is-minimized' : ''} key={w.id} aria-label={`${apps[w.id].title} ${w.minimized ? '복원' : '앞으로 가져오기'}`} onClick={() => openApp(w.id)}>{apps[w.id].title}</button>)}
         </div>
         <time>{now.toLocaleString('ko-KR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</time>
       </footer>
@@ -183,10 +227,10 @@ const launcherActions: Record<AppId, string> = {
 };
 
 function StartMenu({ openApp }: { openApp: (id: AppId) => void }) {
-  return <aside className="start-menu">
+  return <aside className="start-menu" role="menu">
     <strong>Eureka Launcher</strong>
-    <p>오늘 열 작업을 고르세요</p>
-    {(Object.keys(apps) as AppId[]).map((id) => <button key={id} onClick={() => openApp(id)}><span>{apps[id].icon}</span>{launcherActions[id]}</button>)}
+    <p>오늘 열 작업을 고르세요 · Alt+1~7</p>
+    {appOrder.map((id, index) => <button role="menuitem" key={id} onClick={() => openApp(id)}><span>{apps[id].icon}</span>{launcherActions[id]}<small>Alt+{index + 1}</small></button>)}
   </aside>;
 }
 
@@ -206,7 +250,7 @@ function Settings({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) 
 }
 
 function Terminal() {
-  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr /><p>session-log: disabled</p><p>notes: Telegram/session workaround artifacts were removed.</p></div>;
+  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr /><p>shortcuts: Ctrl/⌘+K launcher · Alt+1~7 apps</p><p>window: Ctrl/⌘+Enter maximize · Ctrl/⌘+M minimize · Ctrl/⌘+W close</p><p>session-log: disabled</p><p>notes: Telegram/session workaround artifacts were removed.</p></div>;
 }
 
 function Documents({ openApp }: { openApp: (id: AppId) => void }) {

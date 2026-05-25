@@ -43,6 +43,7 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .start-menu { position: absolute; left: 8px; bottom: 66px; width: 250px; display: grid; gap: 8px; padding: 14px; border: 1px solid rgba(255,255,255,.22); border-radius: 18px; background: rgba(9,17,31,.94); box-shadow: 0 20px 60px rgba(0,0,0,.44); }
 .start-menu p { margin: -2px 0 4px; color: #bfdbfe; font-size: 13px; }
 .start-menu button { display: flex; align-items: center; gap: 10px; text-align: left; }
+.start-menu button small { margin-left: auto; opacity: .72; font: 700 11px 'SFMono-Regular', Consolas, monospace; }
 @media (max-width: 760px) { .hero-panel { display: none; } .window { left: 50% !important; top: 44% !important; transform: translate(-50%, -50%); } .icons { grid-template-columns: repeat(2, 94px); } }
 
 .pixel-office { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; image-rendering: pixelated; }
