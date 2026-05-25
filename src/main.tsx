@@ -64,6 +64,7 @@ function App() {
   return (
     <main className={`desktop theme-${theme}`}>
       <div className="wallpaper-grid" />
+      <PixelOffice />
       <section className="hero-panel">
         <p className="eyebrow">EUREKA.PE.KR</p>
         <h1>Eureka OS</h1>
@@ -107,6 +108,38 @@ function App() {
       </footer>
     </main>
   );
+}
+
+
+const agents = [
+  { name: '과메기', role: 'PM / Boss', state: 'reviewing', avatar: '◆', className: 'pm' },
+  { name: '수달', role: 'Builder', state: 'coding', avatar: '◈', className: 'builder' },
+  { name: '산양', role: 'Research', state: 'researching', avatar: '△', className: 'research' },
+  { name: '공작', role: 'Design', state: 'designing', avatar: '✦', className: 'design' },
+  { name: '비버', role: 'Deploy', state: 'deploying', avatar: '▣', className: 'deploy' },
+  { name: '고슴도치', role: 'Guard', state: 'guarding', avatar: '⬡', className: 'guard' },
+];
+
+function PixelOffice() {
+  return <section className="pixel-office" aria-label="Eureka OS AI 작업실 배경">
+    <div className="office-wall">
+      <span className="neon-sign">Eureka OS · AI 작업실</span>
+      <span className="clock">18:34</span>
+      <span className="shelf shelf-a" />
+      <span className="shelf shelf-b" />
+    </div>
+    <div className="floor-rug" />
+    <div className="meeting-table"><span>sync</span></div>
+    <div className="sofa" />
+    <div className="plant plant-a" />
+    <div className="plant plant-b" />
+    <div className="server-rack"><i /><i /><i /><b /></div>
+    {agents.map((agent) => <div className={`agent-desk ${agent.className}`} key={agent.name}>
+      <div className="desk-top"><span className="monitor" /><span className="keyboard" /></div>
+      <div className="agent-avatar">{agent.avatar}</div>
+      <div className="agent-label"><strong>{agent.name}</strong><small>{agent.role}</small><em>{agent.state}</em></div>
+    </div>)}
+  </section>;
 }
 
 const launcherActions: Record<AppId, string> = {
