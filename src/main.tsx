@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { PointerEvent, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -6,6 +6,7 @@ type Theme = 'atelier' | 'retro95' | 'glass';
 type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'terminal' | 'settings';
 
 type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean };
+type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
 
 const apps: Record<AppId, { title: string; icon: string; accent: string; summary: string }> = {
   agentroom: { title: 'AgentRoom', icon: '◇', accent: '#7dd3fc', summary: 'AI 동료들과 프로젝트를 굴리는 작업방입니다.' },
@@ -25,6 +26,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>('atelier');
   const [windows, setWindows] = useState<WindowState[]>(initialWindows);
   const [startOpen, setStartOpen] = useState(false);
+  const [dragging, setDragging] = useState<DragState | null>(null);
   const maxZ = useMemo(() => Math.max(0, ...windows.map((w) => w.z)), [windows]);
 
   const openApp = (id: AppId) => {
@@ -42,6 +44,22 @@ function App() {
   const focusWindow = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, z: maxZ + 1 } : w)));
   const closeWindow = (id: AppId) => setWindows((current) => current.filter((w) => w.id !== id));
   const minimizeWindow = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
+
+  const beginDrag = (event: PointerEvent<HTMLElement>, win: WindowState) => {
+    if ((event.target as HTMLElement).closest('button')) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging({ id: win.id, startX: event.clientX, startY: event.clientY, originX: win.x, originY: win.y });
+    focusWindow(win.id);
+  };
+
+  const moveDrag = (event: PointerEvent<HTMLElement>) => {
+    if (!dragging) return;
+    const dx = (event.clientX - dragging.startX) / window.innerWidth * 100;
+    const dy = (event.clientY - dragging.startY) / window.innerHeight * 100;
+    setWindows((current) => current.map((w) => w.id === dragging.id ? { ...w, x: Math.min(78, Math.max(12, dragging.originX + dx)), y: Math.min(72, Math.max(10, dragging.originY + dy)) } : w));
+  };
+
+  const endDrag = () => setDragging(null);
 
   return (
     <main className={`desktop theme-${theme}`}>
@@ -68,7 +86,7 @@ function App() {
           style={{ zIndex: win.z, left: `${win.x}%`, top: `${win.y}%`, ['--accent' as string]: apps[win.id].accent }}
           onMouseDown={() => focusWindow(win.id)}
         >
-          <header className="titlebar">
+          <header className="titlebar" onPointerDown={(event) => beginDrag(event, win)} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
             <div><span>{apps[win.id].icon}</span>{apps[win.id].title}</div>
             <nav>
               <button onClick={() => minimizeWindow(win.id)}>_</button>
@@ -85,7 +103,7 @@ function App() {
         <div className="tasks">
           {windows.map((w) => <button key={w.id} onClick={() => openApp(w.id)}>{apps[w.id].title}</button>)}
         </div>
-        <time>{new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</time>
+        <time>{new Date().toLocaleString('ko-KR', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</time>
       </footer>
     </main>
   );
