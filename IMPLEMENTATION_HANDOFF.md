@@ -15,13 +15,13 @@ Role split for current team-mode work:
   - Desktop-like launcher and taskbar.
   - Multiple app windows with open/minimize/close/focus.
   - Draggable window titlebars on pointer devices.
-  - Three custom themes: `atelier`, `retro95`, `glass`.
+  - Three custom themes: `atelier`, `pixel`, `glass`.
   - App placeholders for AgentRoom, UniPlan, Documents, Notes, Terminal, Settings.
 - Validation run: `npm run build` passes locally.
 
 ## Integration notes for reviewers
 
-- UI intentionally avoids Windows/Molroo logos, names, exact assets, and exact system UI copies. It uses generic geometric glyphs and custom theme names.
+- UI intentionally avoids Microsoft/Windows/Molroo logos, product UI names, exact assets, and exact system UI copies. It uses generic geometric glyphs and custom theme names.
 - Deployment should use a dedicated web root and Caddy block for `os.eureka.pe.kr`; see `DEPLOYMENT.md`.
 - Current external check found `http://os.eureka.pe.kr` redirects to HTTPS via Caddy, but HTTPS fails TLS handshake from local curl. Treat as 비버-owned server/TLS blocker before public launch.
 
