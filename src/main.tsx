@@ -193,8 +193,18 @@ function Settings({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) 
   return <div className="content"><h2>분위기 설정</h2><p>상표/로고 복제 없이 Eureka OS 자체 레트로 작업실 톤으로 구성했습니다. 선택한 테마는 이 브라우저에 저장됩니다.</p><div className="theme-picker">{(['classic-gray','meadow-blue','atelier'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
 }
 
+type SystemLog = { updatedAt: string; status: string; entries: { time: string; level: string; message: string }[]; nextActions: string[] };
+
 function Terminal() {
-  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p></div>;
+  const [log, setLog] = useState<SystemLog | null>(null);
+  useEffect(() => {
+    fetch('/system-log.json')
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => setLog(data))
+      .catch(() => setLog(null));
+  }, []);
+
+  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr />{log ? <><p>system-log: {log.updatedAt} · {log.status}</p>{log.entries.map((entry) => <p key={entry.time + entry.message}>[{entry.level}] {entry.time} — {entry.message}</p>)}<p>next: {log.nextActions.join(' / ')}</p></> : <p>system-log: loading or unavailable</p>}</div>;
 }
 
 function Documents({ openApp }: { openApp: (id: AppId) => void }) {
