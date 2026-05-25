@@ -15,9 +15,9 @@ Role split for current team-mode work:
   - Desktop-like launcher and taskbar.
   - Multiple app windows with open/minimize/close/focus.
   - Draggable window titlebars on pointer devices.
-  - Three custom themes: `atelier`, `pixel`, `glass`.
+  - Three custom themes: `classic-gray`, `meadow-blue`, `atelier`.
   - App placeholders for AgentRoom, UniPlan, Documents, Notes, Terminal, Settings.
-- Validation run: `npm run build` passes locally.
+- Validation run: `npm run build` passes locally after UI/brand refinement.
 
 ## Integration notes for reviewers
 
