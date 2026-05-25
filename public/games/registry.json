@@ -1,11 +1,5 @@
 {
   "version": 1,
   "policy": "Only user-owned, directly provided, public-license, homebrew, freeware, or shareware bundles with web-hosting permission may be listed here.",
-  "bundles": [],
-  "externalShortcuts": [
-    { "title": "molroo XP", "url": "https://win.molroo.com/ko/xp", "mode": "new-tab", "note": "External shortcut only; no copying or embedding." },
-    { "title": "molroo 95", "url": "https://win.molroo.com/ko/95", "mode": "new-tab", "note": "External shortcut only; no copying or embedding." },
-    { "title": "win95.molroo", "url": "https://win95.molroo.com/ko", "mode": "new-tab", "note": "External shortcut only; no copying or embedding." },
-    { "title": "winxp.molroo", "url": "https://winxp.molroo.com/ko", "mode": "new-tab", "note": "External shortcut only; no copying or embedding." }
-  ]
+  "bundles": []
 }

@@ -125,7 +125,7 @@ function PixelOffice() {
   return <section className="pixel-office" aria-label="Eureka OS AI 작업실 배경">
     <div className="office-wall">
       <span className="neon-sign">Eureka OS · AI 작업실</span>
-      <span className="clock">18:34</span>
+      <span className="clock">LIVE</span>
       <span className="shelf shelf-a" />
       <span className="shelf shelf-b" />
     </div>
@@ -171,27 +171,16 @@ function WindowContent({ id, theme, setTheme }: { id: AppId; theme: Theme; setTh
 }
 
 
-const externalArcades = [
-  { label: 'molroo XP', url: 'https://win.molroo.com/ko/xp' },
-  { label: 'molroo 95', url: 'https://win.molroo.com/ko/95' },
-  { label: 'win95.molroo', url: 'https://win95.molroo.com/ko' },
-  { label: 'winxp.molroo', url: 'https://winxp.molroo.com/ko' },
-];
-
 function GameLab() {
   return <div className="content game-lab">
     <h2>Game Lab</h2>
-    <p>molroo 게임 파일은 복사하지 않고, 권리 확인된 DOS/js-dos 번들만 안전하게 등록하는 레트로 게임 연구실입니다.</p>
+    <p>권리 확인된 DOS/js-dos 번들만 안전하게 등록하는 Eureka OS 자체 레트로 게임 연구실입니다.</p>
     <div className="game-slots">
       <article><strong>Owned Bundle Slot</strong><span>/public/games/my-game.jsdos</span><em>사용자 보유/직접 제공 파일</em></article>
       <article><strong>Registry JSON</strong><span>/public/games/registry.json</span><em>public-license · homebrew · shareware</em></article>
       <article><strong>Runner Placeholder</strong><span>js-dos dependency는 실제 번들 추가 시 연결</span><em>현재는 빌드 안전 shell</em></article>
     </div>
-    <h3>External arcade shortcuts</h3>
-    <p className="fine-print">아래는 복제/내장 없이 새 탭으로 여는 외부 바로가기입니다.</p>
-    <div className="arcade-links">
-      {externalArcades.map((item) => <button className="external-link" key={item.url} onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}>Open external arcade · {item.label}</button>)}
-    </div>
+    <p className="fine-print">상표/외부 UI 복제 없이, 검증된 번들을 추가할 때만 실행기로 연결합니다.</p>
   </div>;
 }
 
