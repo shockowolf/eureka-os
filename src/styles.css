@@ -169,3 +169,46 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 }
 .terminal p:nth-child(odd) { color: #bfdbfe; }
 .terminal p:first-child { color: #86efac; font-weight: 900; }
+
+/* screenshot readability hotfix */
+.terminal.content,
+.theme-classic-gray .terminal.content {
+  background: #020617 !important;
+  color: #e2f8ef !important;
+}
+.terminal.content p,
+.theme-classic-gray .terminal.content p {
+  color: #e2f8ef !important;
+  opacity: 1 !important;
+  font-weight: 650;
+}
+.terminal.content p:nth-child(odd),
+.theme-classic-gray .terminal.content p:nth-child(odd) { color: #bfdbfe !important; }
+.terminal.content p:first-child,
+.theme-classic-gray .terminal.content p:first-child { color: #86efac !important; }
+
+.theme-classic-gray .window:not(:has(.terminal)) {
+  background: #eef2f6;
+  color: #0f172a;
+}
+.theme-classic-gray .window:not(:has(.terminal)) .content,
+.theme-classic-gray .window:not(:has(.terminal)) .content p,
+.theme-classic-gray .window:not(:has(.terminal)) .content li {
+  color: #0f172a !important;
+  opacity: 1 !important;
+}
+.theme-classic-gray .window:not(:has(.terminal)) .card-row button,
+.theme-classic-gray .window:not(:has(.terminal)) .card-row div {
+  color: #0f172a;
+  background: #ffffff;
+  border-color: #94a3b8;
+  box-shadow: inset 0 -2px 0 rgba(15,23,42,.08);
+}
+.theme-classic-gray .titlebar {
+  color: #0f172a;
+  text-shadow: none;
+}
+.theme-classic-gray .window:has(.terminal) .titlebar {
+  color: #052e16;
+  background: linear-gradient(90deg, #bbf7d0, #86efac);
+}
