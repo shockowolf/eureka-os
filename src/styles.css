@@ -149,3 +149,23 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
   .start-menu { width: calc(100vw - 16px); left: 0; bottom: 70px; }
   .pixel-office { opacity: .56; }
 }
+
+/* terminal readability: keep logs high-contrast in every theme */
+.theme-classic-gray .terminal,
+.terminal {
+  color: #d1fae5;
+  background: #020617;
+  text-shadow: none;
+}
+.theme-classic-gray .terminal p,
+.terminal p {
+  color: #d1fae5;
+  opacity: 1;
+}
+.terminal hr {
+  border: 0;
+  border-top: 1px solid rgba(134, 239, 172, .28);
+  margin: 14px 0;
+}
+.terminal p:nth-child(odd) { color: #bfdbfe; }
+.terminal p:first-child { color: #86efac; font-weight: 900; }
