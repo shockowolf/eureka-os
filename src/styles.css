@@ -121,9 +121,20 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .registry-list article { padding: 12px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; background: rgba(255,255,255,.08); }
 .game-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
 .file-slot input { display: none; }
+.quick-links { margin: 20px 0 6px; }
+.quick-links h3 { margin: 0 0 10px; font-size: 18px; }
+.quick-link-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.quick-link-grid button, .mini-links button { text-align: left; color: inherit; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.1); cursor: pointer; }
+.quick-link-grid button { display: grid; gap: 4px; padding: 12px; }
+.quick-link-grid strong { font-size: 15px; }
+.quick-link-grid span { opacity: .9; font-size: 13px; }
+.quick-link-grid small { color: #bfdbfe; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.mini-links button { padding: 10px 12px; }
 .theme-classic-gray .desktop-icon b { background: rgba(255,255,255,.72); color: #111827; text-shadow: none; }
 .theme-classic-gray .start-menu { background: #d1d5db; color: #111827; }
-.theme-classic-gray .card-row button, .theme-classic-gray .note-actions button, .theme-classic-gray .file-slot { border-color: #6b7280; background: #e5e7eb; color: #111827; }
+.theme-classic-gray .card-row button, .theme-classic-gray .note-actions button, .theme-classic-gray .file-slot, .theme-classic-gray .quick-link-grid button, .theme-classic-gray .mini-links button { border-color: #6b7280; background: #e5e7eb; color: #111827; }
+.theme-classic-gray .quick-link-grid small { color: #1d4ed8; }
 
 @media (max-width: 920px) {
   body { overflow: auto; }
@@ -136,6 +147,7 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
   .window.maximized { inset: 8px 8px 76px 8px !important; width: auto; max-height: none; transform: none; }
   .content { max-height: calc(100svh - 160px); padding: 18px; font-size: 15px; }
   .card-row { grid-template-columns: 1fr; }
+  .quick-link-grid { grid-template-columns: 1fr; }
   .tasks button { max-width: 110px; font-size: 12px; padding: 9px 10px; }
   time { display: none; }
 }

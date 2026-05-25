@@ -8,6 +8,7 @@ type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'term
 type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean; maximized?: boolean };
 type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
 type GameRegistryItem = { id: string; title: string; license: string; status: string; bundlePath?: string; notes?: string };
+type LinkTarget = { label: string; url: string; description: string };
 
 const apps: Record<AppId, { title: string; icon: string; accent: string; summary: string }> = {
   agentroom: { title: 'AI 동료 작업방', icon: '◇', accent: '#7dd3fc', summary: 'AgentRoom: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
@@ -25,6 +26,17 @@ const initialWindows: WindowState[] = [
 ];
 
 const defaultNote = '오늘의 작업\n- Eureka OS 반응형 정리\n- Game Lab 안전 구조 보강\n- os.eureka.pe.kr 배포 상태 확인';
+
+const projectLinks: LinkTarget[] = [
+  { label: 'Eureka OS', url: 'https://os.eureka.pe.kr/', description: '레트로 AI 작업실 메인' },
+  { label: 'Eureka Growth', url: 'https://eureka.pe.kr/', description: '메인 랜딩 페이지' },
+  { label: 'UniPlan Demo', url: 'https://uniplan.eureka.pe.kr/demo', description: '안정 배포된 AI DB 조회 데모' },
+  { label: 'UniPlan Test', url: 'https://test.eureka.pe.kr/demo', description: '진행 중인 개발/검수용 데모' },
+  { label: 'ERP1 easiErp', url: 'https://erp1.eureka.pe.kr/', description: 'easiErp 복구/테스트 환경' },
+  { label: 'ERP2 gootzERP', url: 'https://erp2.eureka.pe.kr/', description: 'gootzERP 복구/테스트 환경' },
+];
+
+const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 
 function App() {
   const [theme, setThemeState] = useState<Theme>(() => (localStorage.getItem('eureka-theme') as Theme) || 'classic-gray');
@@ -193,32 +205,25 @@ function Settings({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) 
   return <div className="content"><h2>분위기 설정</h2><p>상표/로고 복제 없이 Eureka OS 자체 레트로 작업실 톤으로 구성했습니다. 선택한 테마는 이 브라우저에 저장됩니다.</p><div className="theme-picker">{(['classic-gray','meadow-blue','atelier'] as Theme[]).map((item) => <button className={theme === item ? 'active' : ''} onClick={() => setTheme(item)} key={item}>{item}</button>)}</div></div>;
 }
 
-type SystemLog = { updatedAt: string; status: string; entries: { time: string; level: string; message: string }[]; nextActions: string[] };
-
-const fallbackSystemLog: SystemLog = {
-  updatedAt: 'built-in fallback',
-  status: 'local log visible',
-  entries: [
-    { time: 'now', level: 'info', message: 'System log panel is available even when /system-log.json is not deployed yet.' },
-    { time: 'now', level: 'success', message: 'Responsive UI, Game Lab shell, and GitHub push flow are implemented.' },
-  ],
-  nextActions: ['Deploy latest dist to os.eureka.pe.kr', 'Keep long work logs in this panel'],
-};
-
 function Terminal() {
-  const [log, setLog] = useState<SystemLog>(fallbackSystemLog);
-  useEffect(() => {
-    fetch('/system-log.json', { cache: 'no-store' })
-      .then((response) => response.ok ? response.json() : fallbackSystemLog)
-      .then((data) => setLog(data || fallbackSystemLog))
-      .catch(() => setLog(fallbackSystemLog));
-  }, []);
-
-  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr />{<><p>system-log: {log.updatedAt} · {log.status}</p>{log.entries.map((entry) => <p key={entry.time + entry.message}>[{entry.level}] {entry.time} — {entry.message}</p>)}<p>next: {log.nextActions.join(' / ')}</p></>}</div>;
+  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr /><p>session-log: disabled</p><p>notes: Telegram/session workaround artifacts were removed.</p></div>;
 }
 
 function Documents({ openApp }: { openApp: (id: AppId) => void }) {
-  return <div className="content"><h2>문서 서랍</h2><ul><li>README: 프로젝트 개요와 독립 브랜드 고지</li><li>DEPLOYMENT: os.eureka.pe.kr 전용 배포 절차</li><li>GAME_LAB: 게임 번들 등록 정책</li></ul><div className="card-row"><button onClick={() => openApp('gamelab')}>Game Lab 정책</button><button onClick={() => openApp('terminal')}>상태 확인</button><button onClick={() => openApp('notes')}>작업 노트</button></div></div>;
+  return <div className="content"><h2>문서 서랍</h2><ul><li>README: 프로젝트 개요와 독립 브랜드 고지</li><li>DEPLOYMENT: os.eureka.pe.kr 전용 배포 절차</li><li>GAME_LAB: 게임 번들 등록 정책</li></ul><QuickLinks /><div className="card-row"><button onClick={() => openApp('gamelab')}>Game Lab 정책</button><button onClick={() => openApp('terminal')}>상태 확인</button><button onClick={() => openApp('notes')}>작업 노트</button></div></div>;
+}
+
+function QuickLinks() {
+  return <section className="quick-links" aria-label="project quick links">
+    <h3>바로가기</h3>
+    <div className="quick-link-grid">
+      {projectLinks.map((link) => <button key={link.url} onClick={() => openExternal(link.url)}>
+        <strong>{link.label}</strong>
+        <span>{link.description}</span>
+        <small>{link.url.replace('https://', '')}</small>
+      </button>)}
+    </div>
+  </section>;
 }
 
 function Notes() {
@@ -234,7 +239,8 @@ function Notes() {
 }
 
 function WorkspaceApp({ id, openApp, actions }: { id: AppId; openApp: (id: AppId) => void; actions: [string, AppId][] }) {
-  return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row">{actions.map(([label, target]) => <button key={label} onClick={() => openApp(target)}>{label}</button>)}</div></div>;
+  const relatedLinks = id === 'agentroom' ? projectLinks.slice(0, 2) : projectLinks.filter((link) => link.label.includes('UniPlan'));
+  return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row">{actions.map(([label, target]) => <button key={label} onClick={() => openApp(target)}>{label}</button>)}</div><div className="mini-links">{relatedLinks.map((link) => <button key={link.url} onClick={() => openExternal(link.url)}>{link.label} 열기</button>)}</div></div>;
 }
 
 function GameLab() {
@@ -244,7 +250,7 @@ function GameLab() {
   useEffect(() => {
     fetch('/games/registry.json')
       .then((response) => response.ok ? response.json() : [])
-      .then((data) => setRegistry(Array.isArray(data) ? data : data.games || []))
+      .then((data) => setRegistry(Array.isArray(data) ? data : data.bundles || data.games || []))
       .catch(() => setRegistry([]));
   }, []);
 

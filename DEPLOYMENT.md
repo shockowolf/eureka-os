@@ -47,10 +47,7 @@ Required repository secrets:
 - `EUREKA_OS_USER` = `ubuntu`
 - `EUREKA_OS_SSH_KEY` = private SSH key allowed to write/deploy on the server
 
-After secrets are set, every push to `main` builds and deploys `dist/` to `/srv/eureka-os`, then verifies:
-
-- `https://os.eureka.pe.kr/`
-- `https://os.eureka.pe.kr/system-log.json`
+After secrets are set, every push to `main` builds and deploys `dist/` to `/srv/eureka-os`, then verifies `https://os.eureka.pe.kr/`.
 
 Manual fallback:
 
