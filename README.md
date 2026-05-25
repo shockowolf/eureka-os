@@ -35,3 +35,5 @@ Allowed registration paths:
 - External shortcuts that open original sites in a new tab without copying, iframe embedding, or rehosting their assets.
 
 Do not copy molroo game bundles into this project unless each asset has explicit redistribution permission.
+
+See also: `docs/GAME_LAB.md` and `public/games/README.md` for the registry/bundle workflow.

@@ -104,3 +104,8 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .game-lab article span { margin-top: 6px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; opacity: .82; }
 .game-lab article em { margin-top: 8px; width: max-content; padding: 3px 8px; border-radius: 999px; background: #fde68a; color: #422006; font-size: 11px; font-style: normal; font-weight: 900; }
 .external-link { border: 1px solid rgba(255,255,255,.22); border-radius: 12px; padding: 10px 14px; background: linear-gradient(135deg, #fb7185, #7c3aed); cursor: pointer; font-weight: 800; }
+.game-lab h3 { margin: 18px 0 6px; }
+.game-lab .fine-print { margin: 0 0 10px; font-size: 13px; opacity: .74; }
+.arcade-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.arcade-links .external-link { text-align: left; font-size: 13px; }
+@media (max-width: 760px) { .arcade-links { grid-template-columns: 1fr; } }

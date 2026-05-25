@@ -171,16 +171,27 @@ function WindowContent({ id, theme, setTheme }: { id: AppId; theme: Theme; setTh
 }
 
 
+const externalArcades = [
+  { label: 'molroo XP', url: 'https://win.molroo.com/ko/xp' },
+  { label: 'molroo 95', url: 'https://win.molroo.com/ko/95' },
+  { label: 'win95.molroo', url: 'https://win95.molroo.com/ko' },
+  { label: 'winxp.molroo', url: 'https://winxp.molroo.com/ko' },
+];
+
 function GameLab() {
   return <div className="content game-lab">
     <h2>Game Lab</h2>
-    <p>molroo 자산을 복사하지 않고, 권리 확인된 DOS/js-dos 번들만 안전하게 연결하는 슬롯입니다.</p>
+    <p>molroo 게임 파일은 복사하지 않고, 권리 확인된 DOS/js-dos 번들만 안전하게 등록하는 레트로 게임 연구실입니다.</p>
     <div className="game-slots">
       <article><strong>Owned Bundle Slot</strong><span>/public/games/my-game.jsdos</span><em>사용자 보유/직접 제공 파일</em></article>
-      <article><strong>Open Registry</strong><span>homebrew · shareware · public license</span><em>라이선스 확인 후 등록</em></article>
-      <article><strong>External Shortcut</strong><span>원본 사이트는 새 탭 링크로만</span><em>iframe/복제 없음</em></article>
+      <article><strong>Registry JSON</strong><span>/public/games/registry.json</span><em>public-license · homebrew · shareware</em></article>
+      <article><strong>Runner Placeholder</strong><span>js-dos dependency는 실제 번들 추가 시 연결</span><em>현재는 빌드 안전 shell</em></article>
     </div>
-    <button className="external-link" onClick={() => window.open('https://www.google.com/search?q=js-dos+public+domain+dos+games', '_blank', 'noopener,noreferrer')}>공개 라이선스 후보 찾기</button>
+    <h3>External arcade shortcuts</h3>
+    <p className="fine-print">아래는 복제/내장 없이 새 탭으로 여는 외부 바로가기입니다.</p>
+    <div className="arcade-links">
+      {externalArcades.map((item) => <button className="external-link" key={item.url} onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}>Open external arcade · {item.label}</button>)}
+    </div>
   </div>;
 }
 

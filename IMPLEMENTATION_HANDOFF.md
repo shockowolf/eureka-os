@@ -23,7 +23,7 @@ Role split for current team-mode work:
 ## Integration notes for reviewers
 
 - UI intentionally avoids Microsoft/Windows/Molroo logos, product UI names, exact assets, and exact system UI copies. It uses generic geometric glyphs and custom theme names.
-- Game Lab is a safe shell only: no molroo game bundles/ROMs/assets are copied. Use only user-owned, directly provided, or public-license js-dos bundles; external originals should open as new-tab shortcuts rather than iframes/rehosts.
+- Game Lab is a safe shell only: no molroo game bundles/ROMs/assets are copied. Use only user-owned, directly provided, or public-license js-dos bundles; external originals open as new-tab shortcuts rather than iframes/rehosts. Game registry placeholders now exist at `public/games/README.md`, `public/games/registry.json`, and `docs/GAME_LAB.md`.
 - Deployment should use a dedicated web root and Caddy block for `os.eureka.pe.kr`; see `DEPLOYMENT.md`.
 - Latest external check: `http://os.eureka.pe.kr` redirects to HTTPS and `https://os.eureka.pe.kr` returns HTTP 200 from Caddy. SSH to `168.107.49.213:22` still times out from this environment, so direct server deployment remains blocked here unless another channel has server access.
 
