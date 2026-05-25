@@ -36,3 +36,24 @@ caddy reload --config /etc/caddy/Caddyfile
 ```
 
 Current known blocker: `http://os.eureka.pe.kr` reaches Caddy and redirects to HTTPS, but HTTPS currently fails during TLS handshake. That likely means the host block/certificate issuance path needs server-side Caddy inspection.
+
+## Immediate deployment automation
+
+GitHub Actions workflow: `.github/workflows/deploy-os.yml`
+
+Required repository secrets:
+
+- `EUREKA_OS_HOST` = `168.107.49.213` or reachable Tailscale/VPN host
+- `EUREKA_OS_USER` = `ubuntu`
+- `EUREKA_OS_SSH_KEY` = private SSH key allowed to write/deploy on the server
+
+After secrets are set, every push to `main` builds and deploys `dist/` to `/srv/eureka-os`, then verifies:
+
+- `https://os.eureka.pe.kr/`
+- `https://os.eureka.pe.kr/system-log.json`
+
+Manual fallback:
+
+```bash
+EUREKA_OS_HOST=168.107.49.213 EUREKA_OS_USER=ubuntu scripts/deploy-manual.sh
+```
