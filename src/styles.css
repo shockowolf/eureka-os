@@ -132,10 +132,25 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .quick-link-grid small { color: #bfdbfe; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mini-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 .mini-links button { padding: 10px 12px; }
+.agent-board, .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+.agent-board article, .work-grid article, .handoff-strip { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.09); }
+.agent-board article { display: grid; gap: 5px; padding: 14px; border-color: color-mix(in srgb, var(--card-accent), transparent 38%); box-shadow: inset 4px 0 0 var(--card-accent); }
+.agent-board strong, .work-grid strong { font-size: 17px; }
+.agent-board span { color: #bfdbfe; font-size: 13px; }
+.agent-board em, .work-grid em { width: max-content; padding: 3px 8px; border-radius: 999px; background: rgba(34,197,94,.18); color: #bbf7d0; font-size: 11px; font-style: normal; font-weight: 900; }
+.agent-board p, .work-grid p { margin: 4px 0 0; font-size: 14px; }
+.handoff-strip { display: grid; gap: 4px; padding: 12px 14px; }
+.handoff-strip span { color: var(--muted); font-size: 13px; }
+.work-grid article { display: grid; gap: 10px; padding: 14px; }
+.work-grid article > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.work-grid button { justify-self: start; padding: 9px 12px; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; background: rgba(255,255,255,.12); cursor: pointer; }
 .theme-classic-gray .desktop-icon b { background: rgba(255,255,255,.72); color: #111827; text-shadow: none; }
 .theme-classic-gray .start-menu { background: #d1d5db; color: #111827; }
-.theme-classic-gray .card-row button, .theme-classic-gray .note-actions button, .theme-classic-gray .file-slot, .theme-classic-gray .quick-link-grid button, .theme-classic-gray .mini-links button { border-color: #6b7280; background: #e5e7eb; color: #111827; }
+.theme-classic-gray .card-row button, .theme-classic-gray .note-actions button, .theme-classic-gray .file-slot, .theme-classic-gray .quick-link-grid button, .theme-classic-gray .mini-links button, .theme-classic-gray .work-grid button { border-color: #6b7280; background: #e5e7eb; color: #111827; }
 .theme-classic-gray .quick-link-grid small { color: #1d4ed8; }
+.theme-classic-gray .agent-board article, .theme-classic-gray .work-grid article, .theme-classic-gray .handoff-strip { background: #fff; border-color: #94a3b8; }
+.theme-classic-gray .agent-board span, .theme-classic-gray .handoff-strip span { color: #334155; }
+.theme-classic-gray .agent-board em, .theme-classic-gray .work-grid em { background: #dcfce7; color: #14532d; }
 
 @media (max-width: 920px) {
   body { overflow: auto; }
@@ -149,6 +164,7 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
   .content { max-height: calc(100svh - 160px); padding: 18px; font-size: 15px; }
   .card-row { grid-template-columns: 1fr; }
   .quick-link-grid { grid-template-columns: 1fr; }
+  .agent-board, .work-grid { grid-template-columns: 1fr; }
   .tasks button { max-width: 110px; font-size: 12px; padding: 9px 10px; }
   time { display: none; }
 }

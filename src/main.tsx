@@ -9,6 +9,8 @@ type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boo
 type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
 type GameRegistryItem = { id: string; title: string; license: string; status: string; bundlePath?: string; notes?: string };
 type LinkTarget = { label: string; url: string; description: string };
+type AgentCard = { name: string; role: string; status: string; next: string; accent: string };
+type WorkCard = { title: string; status: string; description: string; linkLabel: string; url: string };
 
 const apps: Record<AppId, { title: string; icon: string; accent: string; summary: string }> = {
   agentroom: { title: 'AI 동료 작업방', icon: '◇', accent: '#7dd3fc', summary: 'AgentRoom: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
@@ -38,6 +40,20 @@ const projectLinks: LinkTarget[] = [
 
 const openExternal = (url: string) => window.open(url, '_blank', 'noopener,noreferrer');
 const appOrder = Object.keys(apps) as AppId[];
+
+const agentCards: AgentCard[] = [
+  { name: '과메기', role: 'PM / 통합', status: '작업 흐름 정리', next: '큰 작업은 짧은 인계와 검증 결과로 묶기', accent: '#7dd3fc' },
+  { name: '수달', role: '코딩 / 패치', status: '구현 대기', next: 'UI 기능·버그수정·빌드 검증', accent: '#a7f3d0' },
+  { name: '산양', role: '리서치 / 검토', status: '조사 대기', next: '시장/정책/기술 근거 확인', accent: '#fde68a' },
+  { name: '공작', role: 'UI / 브랜드', status: '디자인 감각 보정', next: '레트로 감성은 살리고 가독성 유지', accent: '#f0abfc' },
+];
+
+const workCards: WorkCard[] = [
+  { title: '안정 Demo', status: 'public', description: '말로 DB를 조회하는 UniPlan 공개 데모.', linkLabel: 'demo 열기', url: 'https://uniplan.eureka.pe.kr/demo' },
+  { title: '입력 화면', status: 'public', description: '거래처/품목/청구 입력 MVP.', linkLabel: 'input 열기', url: 'https://uniplan.eureka.pe.kr/input' },
+  { title: '개발 Test', status: 'dev', description: '진행 중인 변경은 이쪽에서 먼저 검수.', linkLabel: 'test 열기', url: 'https://test.eureka.pe.kr/demo' },
+  { title: 'ERP 복구', status: 'ops', description: 'ERP1/ERP2 운영 복구 상태 확인용.', linkLabel: 'ERP1 열기', url: 'https://erp1.eureka.pe.kr/' },
+];
 
 function App() {
   const [theme, setThemeState] = useState<Theme>(() => (localStorage.getItem('eureka-theme') as Theme) || 'classic-gray');
@@ -240,8 +256,8 @@ function WindowContent({ id, theme, setTheme, openApp }: { id: AppId; theme: The
   if (id === 'documents') return <Documents openApp={openApp} />;
   if (id === 'notes') return <Notes />;
   if (id === 'gamelab') return <GameLab />;
-  if (id === 'agentroom') return <WorkspaceApp id={id} openApp={openApp} actions={[['계획 보드 열기', 'uniplan'], ['작업 노트 열기', 'notes'], ['시스템 로그 보기', 'terminal']]} />;
-  if (id === 'uniplan') return <WorkspaceApp id={id} openApp={openApp} actions={[['문서 서랍 열기', 'documents'], ['작업 노트 열기', 'notes'], ['분위기 설정', 'settings']]} />;
+  if (id === 'agentroom') return <AgentRoomApp openApp={openApp} />;
+  if (id === 'uniplan') return <UniPlanApp openApp={openApp} />;
   return null;
 }
 
@@ -282,9 +298,12 @@ function Notes() {
   return <div className="content"><h2>작업 노트</h2><p className="fine-print">브라우저 localStorage에 저장됩니다.</p><textarea value={note} onChange={(event) => { setSaved('수정 중'); save(event.target.value); }} /><div className="note-actions"><span>{saved}</span><button onClick={reset}>기본 노트로 초기화</button></div></div>;
 }
 
-function WorkspaceApp({ id, openApp, actions }: { id: AppId; openApp: (id: AppId) => void; actions: [string, AppId][] }) {
-  const relatedLinks = id === 'agentroom' ? projectLinks.slice(0, 2) : projectLinks.filter((link) => link.label.includes('UniPlan'));
-  return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row">{actions.map(([label, target]) => <button key={label} onClick={() => openApp(target)}>{label}</button>)}</div><div className="mini-links">{relatedLinks.map((link) => <button key={link.url} onClick={() => openExternal(link.url)}>{link.label} 열기</button>)}</div></div>;
+function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
+  return <div className="content"><h2>{apps.agentroom.title}</h2><p>{apps.agentroom.summary}</p><div className="agent-board">{agentCards.map((agent) => <article key={agent.name} style={{ ['--card-accent' as string]: agent.accent }}><strong>{agent.name}</strong><span>{agent.role}</span><em>{agent.status}</em><p>{agent.next}</p></article>)}</div><div className="handoff-strip"><b>운영 방식</b><span>긴 대화는 3000자 전후로 문맥 분할 · 긴 작업은 파일 인계 · 공개 전송은 확인 후 진행</span></div><div className="card-row"><button onClick={() => openApp('uniplan')}>계획 보드 열기</button><button onClick={() => openApp('notes')}>작업 노트 열기</button><button onClick={() => openApp('terminal')}>시스템 상태 보기</button></div></div>;
+}
+
+function UniPlanApp({ openApp }: { openApp: (id: AppId) => void }) {
+  return <div className="content"><h2>{apps.uniplan.title}</h2><p>UniPlan과 ERP 복구/데모 환경을 한 번에 여는 작업 보드입니다.</p><div className="work-grid">{workCards.map((card) => <article key={card.title}><div><strong>{card.title}</strong><em>{card.status}</em></div><p>{card.description}</p><button onClick={() => openExternal(card.url)}>{card.linkLabel}</button></article>)}</div><div className="card-row"><button onClick={() => openApp('documents')}>문서 서랍 열기</button><button onClick={() => openApp('notes')}>작업 노트 열기</button><button onClick={() => openApp('settings')}>분위기 설정</button></div></div>;
 }
 
 function GameLab() {
