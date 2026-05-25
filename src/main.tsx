@@ -195,16 +195,26 @@ function Settings({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) 
 
 type SystemLog = { updatedAt: string; status: string; entries: { time: string; level: string; message: string }[]; nextActions: string[] };
 
+const fallbackSystemLog: SystemLog = {
+  updatedAt: 'built-in fallback',
+  status: 'local log visible',
+  entries: [
+    { time: 'now', level: 'info', message: 'System log panel is available even when /system-log.json is not deployed yet.' },
+    { time: 'now', level: 'success', message: 'Responsive UI, Game Lab shell, and GitHub push flow are implemented.' },
+  ],
+  nextActions: ['Deploy latest dist to os.eureka.pe.kr', 'Keep long work logs in this panel'],
+};
+
 function Terminal() {
-  const [log, setLog] = useState<SystemLog | null>(null);
+  const [log, setLog] = useState<SystemLog>(fallbackSystemLog);
   useEffect(() => {
-    fetch('/system-log.json')
-      .then((response) => response.ok ? response.json() : null)
-      .then((data) => setLog(data))
-      .catch(() => setLog(null));
+    fetch('/system-log.json', { cache: 'no-store' })
+      .then((response) => response.ok ? response.json() : fallbackSystemLog)
+      .then((data) => setLog(data || fallbackSystemLog))
+      .catch(() => setLog(fallbackSystemLog));
   }, []);
 
-  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr />{log ? <><p>system-log: {log.updatedAt} · {log.status}</p>{log.entries.map((entry) => <p key={entry.time + entry.message}>[{entry.level}] {entry.time} — {entry.message}</p>)}<p>next: {log.nextActions.join(' / ')}</p></> : <p>system-log: loading or unavailable</p>}</div>;
+  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr />{<><p>system-log: {log.updatedAt} · {log.status}</p>{log.entries.map((entry) => <p key={entry.time + entry.message}>[{entry.level}] {entry.time} — {entry.message}</p>)}<p>next: {log.nextActions.join(' / ')}</p></>}</div>;
 }
 
 function Documents({ openApp }: { openApp: (id: AppId) => void }) {
