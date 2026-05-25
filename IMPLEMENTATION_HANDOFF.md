@@ -16,17 +16,20 @@ Role split for current team-mode work:
   - Multiple app windows with open/minimize/close/focus.
   - Draggable window titlebars on pointer devices.
   - Three custom themes: `classic-gray`, `meadow-blue`, `atelier`.
-  - App placeholders for AgentRoom, UniPlan, Documents, Notes, Terminal, Settings.
+  - App placeholders for AgentRoom, UniPlan, Documents, Notes, Game Lab, Terminal, Settings.
+  - CSS pixel-office background with agent workstations/status badges.
 - Validation run: `npm run build` passes locally after UI/brand refinement.
 
 ## Integration notes for reviewers
 
 - UI intentionally avoids Microsoft/Windows/Molroo logos, product UI names, exact assets, and exact system UI copies. It uses generic geometric glyphs and custom theme names.
+- Game Lab is a safe shell only: no molroo game bundles/ROMs/assets are copied. Use only user-owned, directly provided, or public-license js-dos bundles; external originals should open as new-tab shortcuts rather than iframes/rehosts.
 - Deployment should use a dedicated web root and Caddy block for `os.eureka.pe.kr`; see `DEPLOYMENT.md`.
-- Current external check found `http://os.eureka.pe.kr` redirects to HTTPS via Caddy, but HTTPS fails TLS handshake from local curl. Treat as 비버-owned server/TLS blocker before public launch.
+- Latest external check: `http://os.eureka.pe.kr` redirects to HTTPS and `https://os.eureka.pe.kr` returns HTTP 200 from Caddy. SSH to `168.107.49.213:22` still times out from this environment, so direct server deployment remains blocked here unless another channel has server access.
 
 ## Suggested next implementation tasks
 
 1. Replace placeholder app content with real project links once routing/targets are confirmed.
 2. Add keyboard accessibility polish for launcher/window controls.
 3. Add a small status/config file if deployment needs runtime link targets without rebuilding.
+4. Implement Game Lab registry loading only after game bundle licenses/ownership are confirmed.

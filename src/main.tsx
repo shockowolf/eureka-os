@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 type Theme = 'classic-gray' | 'meadow-blue' | 'atelier';
-type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'terminal' | 'settings';
+type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'terminal' | 'settings';
 
 type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean };
 type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
@@ -13,6 +13,7 @@ const apps: Record<AppId, { title: string; icon: string; accent: string; summary
   uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
   documents: { title: '문서 서랍', icon: '▤', accent: '#fde68a', summary: 'Documents: 프로젝트 문서와 링크를 차곡차곡 넣어두는 서랍입니다.' },
   notes: { title: '작업 노트', icon: '✧', accent: '#f0abfc', summary: 'Notes: 빠른 메모와 오늘의 작업 흔적을 적어두는 노트입니다.' },
+  gamelab: { title: 'Game Lab', icon: '▦', accent: '#fb7185', summary: '권리 확인된 js-dos 번들만 등록해 실행하는 레트로 게임 연구실입니다.' },
   terminal: { title: '시스템 로그', icon: '▸', accent: '#86efac', summary: 'Terminal: Eureka OS 상태와 빌드 로그를 보여줍니다.' },
   settings: { title: '분위기 설정', icon: '◌', accent: '#c4b5fd', summary: 'Settings: 테마와 데스크톱 분위기를 조절합니다.' },
 };
@@ -147,6 +148,7 @@ const launcherActions: Record<AppId, string> = {
   uniplan: '계획 보기',
   documents: '문서 서랍',
   notes: '작업 로그',
+  gamelab: '게임 연구실',
   terminal: '시스템 로그',
   settings: '테마 바꾸기',
 };
@@ -164,7 +166,22 @@ function WindowContent({ id, theme, setTheme }: { id: AppId; theme: Theme; setTh
   if (id === 'terminal') return <div className="content terminal"><p>$ boot eureka-os</p><p>status: local MVP ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>note: os 전용 Caddy 호스트로 배포 대기</p></div>;
   if (id === 'documents') return <div className="content"><h2>문서 서랍</h2><ul><li>프로젝트 링크 허브</li><li>릴리즈 노트</li><li>운영 문서</li></ul></div>;
   if (id === 'notes') return <div className="content"><h2>작업 노트</h2><textarea defaultValue={'오늘의 작업\n- Eureka OS MVP 생성\n- GitHub repo 준비\n- os.eureka.pe.kr 배포 확인'} /></div>;
+  if (id === 'gamelab') return <GameLab />;
   return <div className="content"><h2>{apps[id].title}</h2><p>{apps[id].summary}</p><div className="card-row"><div>Launch</div><div>Docs</div><div>Status</div></div></div>;
+}
+
+
+function GameLab() {
+  return <div className="content game-lab">
+    <h2>Game Lab</h2>
+    <p>molroo 자산을 복사하지 않고, 권리 확인된 DOS/js-dos 번들만 안전하게 연결하는 슬롯입니다.</p>
+    <div className="game-slots">
+      <article><strong>Owned Bundle Slot</strong><span>/public/games/my-game.jsdos</span><em>사용자 보유/직접 제공 파일</em></article>
+      <article><strong>Open Registry</strong><span>homebrew · shareware · public license</span><em>라이선스 확인 후 등록</em></article>
+      <article><strong>External Shortcut</strong><span>원본 사이트는 새 탭 링크로만</span><em>iframe/복제 없음</em></article>
+    </div>
+    <button className="external-link" onClick={() => window.open('https://www.google.com/search?q=js-dos+public+domain+dos+games', '_blank', 'noopener,noreferrer')}>공개 라이선스 후보 찾기</button>
+  </div>;
 }
 
 createRoot(document.getElementById('root')!).render(<App />);
