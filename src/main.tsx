@@ -1,6 +1,13 @@
-import React, { ChangeEvent, PointerEvent, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
+
+type DosPlayer = { stop?: () => Promise<void>; save?: () => Promise<unknown> };
+type DosLauncher = (root: HTMLElement, options: Record<string, unknown>) => DosPlayer;
+
+declare global {
+  interface Window { Dos?: DosLauncher }
+}
 
 type Theme = 'classic-gray' | 'meadow-blue' | 'atelier';
 type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'terminal' | 'settings';
@@ -13,7 +20,7 @@ type AgentCard = { name: string; role: string; status: string; next: string; acc
 type WorkCard = { title: string; status: string; description: string; linkLabel: string; url: string };
 
 const apps: Record<AppId, { title: string; icon: string; accent: string; summary: string }> = {
-  agentroom: { title: 'AI 동료 작업방', icon: '◇', accent: '#7dd3fc', summary: 'AgentRoom: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
+  agentroom: { title: 'Agent Room', icon: '◇', accent: '#7dd3fc', summary: 'Agent Room: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
   uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
   documents: { title: '문서 서랍', icon: '▤', accent: '#fde68a', summary: 'Documents: 프로젝트 문서와 운영 링크를 차곡차곡 넣어두는 서랍입니다.' },
   notes: { title: '작업 노트', icon: '✧', accent: '#f0abfc', summary: 'Notes: 빠른 메모와 오늘의 작업 흔적을 브라우저에 저장합니다.' },
@@ -53,6 +60,21 @@ const workCards: WorkCard[] = [
   { title: '입력 화면', status: 'public', description: '거래처/품목/청구 입력 MVP.', linkLabel: 'input 열기', url: 'https://uniplan.eureka.pe.kr/input' },
   { title: '개발 Test', status: 'dev', description: '진행 중인 변경은 이쪽에서 먼저 검수.', linkLabel: 'test 열기', url: 'https://test.eureka.pe.kr/demo' },
   { title: 'ERP 복구', status: 'ops', description: 'ERP1/ERP2 운영 복구 상태 확인용.', linkLabel: 'ERP1 열기', url: 'https://erp1.eureka.pe.kr/' },
+];
+
+const agentRoomRooms = [
+  { id: 'team', name: 'AgentRoom 전략실', meta: '단체방 · 10라운드 프로토콜' },
+  { id: 'gwamegi', name: '과메기', meta: '1:1 · PM / 통합' },
+  { id: 'sudal', name: '수달', meta: '1:1 · Dev / 구현' },
+  { id: 'sanyang', name: '산양', meta: '1:1 · Research / 근거' },
+];
+
+const agentRoomMessages = [
+  { author: '고라니', role: 'Owner', body: '텔레그램 대신 우리가 쓸 AI 작업 콘솔을 만들자.' },
+  { author: '과메기', role: 'PM · 1R', body: '의제 설정: 상시 회의가 아니라 필요할 때 켜지는 전략실로 간다.' },
+  { author: '수달', role: 'Dev · 2R', body: '방, 메시지, 작업 상태부터 잡으면 되겠구먼. 실제 연결 전에도 UX를 검증할 수 있소.' },
+  { author: '산양', role: 'Research · 2R', body: '메에. 사용자는 회의 로그보다 결론을 원해. 과메기 클로징을 기본으로 보여줘.' },
+  { author: '과메기', role: 'PM · 10R', body: '클로징: capability 기반 라우팅, 히스토리 보존, 최대 10라운드 안에서 닫는다.' },
 ];
 
 function App() {
@@ -233,7 +255,7 @@ function PixelOffice() {
 }
 
 const launcherActions: Record<AppId, string> = {
-  agentroom: '작업방 열기',
+  agentroom: 'Agent Room 열기',
   uniplan: '계획 보기',
   documents: '문서 서랍',
   notes: '작업 로그',
@@ -299,7 +321,27 @@ function Notes() {
 }
 
 function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
-  return <div className="content"><h2>{apps.agentroom.title}</h2><p>{apps.agentroom.summary}</p><div className="agent-board">{agentCards.map((agent) => <article key={agent.name} style={{ ['--card-accent' as string]: agent.accent }}><strong>{agent.name}</strong><span>{agent.role}</span><em>{agent.status}</em><p>{agent.next}</p></article>)}</div><div className="handoff-strip"><b>운영 방식</b><span>긴 대화는 3000자 전후로 문맥 분할 · 긴 작업은 파일 인계 · 공개 전송은 확인 후 진행</span></div><div className="card-row"><button onClick={() => openApp('uniplan')}>계획 보드 열기</button><button onClick={() => openApp('notes')}>작업 노트 열기</button><button onClick={() => openApp('terminal')}>시스템 상태 보기</button></div></div>;
+  const [roomId, setRoomId] = useState('team');
+  const currentRoom = agentRoomRooms.find((room) => room.id === roomId) || agentRoomRooms[0];
+
+  return <div className="content agentroom-app"><h2>{apps.agentroom.title}</h2><p>{apps.agentroom.summary}</p>
+    <section className="agentroom-shell">
+      <aside className="agentroom-rooms" aria-label="Agent Room rooms">
+        {agentRoomRooms.map((room) => <button className={room.id === roomId ? 'active' : ''} key={room.id} onClick={() => setRoomId(room.id)}><strong>{room.name}</strong><span>{room.meta}</span></button>)}
+      </aside>
+      <main className="agentroom-chat">
+        <header><strong>{currentRoom.name}</strong><span>{currentRoom.meta}</span></header>
+        <div className="agentroom-messages">
+          {agentRoomMessages.map((message, index) => <article className={message.author === '고라니' ? 'from-user' : ''} key={index}><b>{message.author}</b><em>{message.role}</em><p>{message.body}</p></article>)}
+        </div>
+        <div className="agentroom-composer"><span>팀 모드 안건 입력</span><button onClick={() => openApp('notes')}>작업 노트로 보내기</button></div>
+      </main>
+      <aside className="agentroom-agents" aria-label="active agents">
+        {agentCards.map((agent) => <article key={agent.name} style={{ ['--card-accent' as string]: agent.accent }}><strong>{agent.name}</strong><span>{agent.role}</span><em>{agent.status}</em></article>)}
+      </aside>
+    </section>
+    <div className="handoff-strip"><b>운영 방식</b><span>긴 대화는 3000자 전후로 문맥 분할 · 긴 작업은 파일 인계 · 공개 전송은 확인 후 진행</span></div>
+    <div className="card-row"><button onClick={() => openApp('uniplan')}>계획 보드 열기</button><button onClick={() => openApp('notes')}>작업 노트 열기</button><button onClick={() => openApp('terminal')}>시스템 상태 보기</button></div></div>;
 }
 
 function UniPlanApp({ openApp }: { openApp: (id: AppId) => void }) {
@@ -308,7 +350,21 @@ function UniPlanApp({ openApp }: { openApp: (id: AppId) => void }) {
 
 function GameLab() {
   const [registry, setRegistry] = useState<GameRegistryItem[]>([]);
-  const [bundleName, setBundleName] = useState('선택된 번들 없음');
+  const [bundleFile, setBundleFile] = useState<File | null>(null);
+  const [dosReady, setDosReady] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [runnerMessage, setRunnerMessage] = useState('js-dos 실행기를 준비 중입니다.');
+  const dosRootRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<DosPlayer | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+
+  const stopGame = useCallback(async () => {
+    if (playerRef.current?.stop) await playerRef.current.stop();
+    playerRef.current = null;
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    objectUrlRef.current = null;
+    setIsPlaying(false);
+  }, []);
 
   useEffect(() => {
     fetch('/games/registry.json')
@@ -317,23 +373,82 @@ function GameLab() {
       .catch(() => setRegistry([]));
   }, []);
 
-  const onBundle = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setBundleName(file ? `${file.name} · 로컬 선택 완료` : '선택된 번들 없음');
-  };
+  useEffect(() => {
+    const cssId = 'js-dos-css';
+    if (!document.getElementById(cssId)) {
+      const link = document.createElement('link');
+      link.id = cssId;
+      link.rel = 'stylesheet';
+      link.href = '/js-dos/js-dos.css';
+      document.head.appendChild(link);
+    }
+
+    if (window.Dos) {
+      setDosReady(true);
+      setRunnerMessage('js-dos 실행기 준비 완료. 로컬 .jsdos 파일을 선택하세요.');
+      return () => { void stopGame(); };
+    }
+
+    const script = document.createElement('script');
+    script.src = '/js-dos/js-dos.js';
+    script.async = true;
+    script.onload = () => {
+      setDosReady(Boolean(window.Dos));
+      setRunnerMessage(window.Dos ? 'js-dos 실행기 준비 완료. 로컬 .jsdos 파일을 선택하세요.' : 'js-dos 실행기를 찾지 못했습니다.');
+    };
+    script.onerror = () => setRunnerMessage('js-dos 실행기 로드에 실패했습니다.');
+    document.body.appendChild(script);
+
+    return () => { void stopGame(); };
+  }, [stopGame]);
+
+  const onBundleSelect = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    void stopGame();
+    setBundleFile(file);
+    setRunnerMessage(file ? `${file.name} 선택됨. 서버 업로드 없이 이 브라우저에서만 실행합니다.` : '선택된 번들이 없습니다.');
+  }, [stopGame]);
+
+  const startGame = useCallback(async () => {
+    if (!bundleFile || !dosRootRef.current || !window.Dos) return;
+    await stopGame();
+    dosRootRef.current.innerHTML = '';
+    const objectUrl = URL.createObjectURL(bundleFile);
+    objectUrlRef.current = objectUrl;
+    setIsPlaying(true);
+    setRunnerMessage('로컬 번들을 실행 중입니다. 파일은 서버로 업로드되지 않습니다.');
+    playerRef.current = window.Dos(dosRootRef.current, {
+      url: objectUrl,
+      pathPrefix: '/emulators/',
+      noCloud: true,
+      noNetworking: true,
+      autoStart: true,
+    });
+  }, [bundleFile, stopGame]);
 
   return <div className="content game-lab">
     <h2>Game Lab</h2>
-    <p>권리 확인된 DOS/js-dos 번들만 안전하게 등록하는 Eureka OS 자체 레트로 게임 연구실입니다.</p>
+    <p>사용자가 직접 고른 js-dos 번들을 서버 업로드 없이 브라우저에서 실행하는 로컬 게임 런처입니다.</p>
+
+    <div className="local-runner-note"><b>Local-only mode</b><span> 게임 파일은 파일 선택창으로만 읽고, Eureka OS 서버에는 저장하지 않습니다.</span></div>
+
     <div className="game-toolbar">
-      <label className="file-slot">내 js-dos 번들 선택<input type="file" accept=".jsdos,.zip" onChange={onBundle} /></label>
-      <span>{bundleName}</span>
+      <label className="file-slot">로컬 js-dos 번들 선택<input type="file" accept=".jsdos,.zip" onChange={onBundleSelect} /></label>
+      <span>{bundleFile ? `${bundleFile.name} · 로컬 선택 완료` : '선택된 번들 없음'}</span>
+      <button disabled={!bundleFile || !dosReady || isPlaying} onClick={startGame}>로컬 실행</button>
+      <button disabled={!isPlaying} onClick={stopGame}>종료</button>
     </div>
+
+    <div className="dos-container" ref={dosRootRef}>
+      {!isPlaying && <div className="dos-placeholder"><strong>js-dos player</strong><span>{runnerMessage}</span></div>}
+    </div>
+
     <div className="game-slots">
-      <article><strong>Owned Bundle Slot</strong><span>/public/games/my-game.jsdos</span><em>사용자 보유/직접 제공 파일</em></article>
-      <article><strong>Registry JSON</strong><span>/public/games/registry.json</span><em>public-license · homebrew · shareware</em></article>
-      <article><strong>Runner Status</strong><span>실행기는 검증된 번들 추가 시 연결</span><em>safe shell ready</em></article>
+      <article><strong>File source</strong><span>브라우저 파일 선택</span><em>no upload</em></article>
+      <article><strong>Storage</strong><span>현재 MVP는 매번 선택 방식</span><em>IndexedDB next</em></article>
+      <article><strong>Runner</strong><span>{dosReady ? 'js-dos ready' : 'loading js-dos'}</span><em>{dosReady ? 'ready' : 'loading'}</em></article>
     </div>
+
     <h3>Registry</h3>
     <div className="registry-list">
       {registry.length ? registry.map((game) => <article key={game.id}><strong>{game.title}</strong><span>{game.license} · {game.status}</span><small>{game.bundlePath || game.notes || 'bundle pending'}</small></article>) : <p className="fine-print">registry를 불러올 항목이 아직 없습니다.</p>}
