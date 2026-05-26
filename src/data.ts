@@ -1,5 +1,6 @@
 import type { AgentCard, AgentRoomMessage, AgentRoomRoom, AppId, AppMeta, LinkTarget, WindowState, WorkCard } from './types';
 
+// Static product metadata for the desktop shell. Dynamic/runtime state should stay in components.
 export const apps: Record<AppId, AppMeta> = {
   agentroom: { title: 'Agent Room', icon: '◇', accent: '#7dd3fc', summary: 'Agent Room: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
   uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
@@ -12,6 +13,7 @@ export const apps: Record<AppId, AppMeta> = {
 
 export const appOrder = Object.keys(apps) as AppId[];
 
+// Initial boot layout: open status + Agent Room so the page immediately feels alive.
 export const initialWindows: WindowState[] = [
   { id: 'terminal', z: 2, x: 12, y: 16 },
   { id: 'agentroom', z: 1, x: 38, y: 25 },
@@ -19,6 +21,7 @@ export const initialWindows: WindowState[] = [
 
 export const defaultNote = '오늘의 작업\n- Eureka OS 반응형 정리\n- Game Lab 안전 구조 보강\n- os.eureka.pe.kr 배포 상태 확인';
 
+// External links are opened with noopener/noreferrer in main.tsx; do not put secrets here.
 export const projectLinks: LinkTarget[] = [
   { label: 'Eureka OS', url: 'https://os.eureka.pe.kr/', description: '레트로 AI 작업실 메인' },
   { label: 'Eureka Growth', url: 'https://eureka.pe.kr/', description: '메인 랜딩 페이지' },
@@ -42,6 +45,7 @@ export const workCards: WorkCard[] = [
   { title: 'ERP 복구', status: 'ops', description: 'ERP1/ERP2 운영 복구 상태 확인용.', linkLabel: 'ERP1 열기', url: 'https://erp1.eureka.pe.kr/' },
 ];
 
+// Agent Room preview data mirrors the real mobile AgentRoom concept without requiring backend wiring yet.
 export const agentRoomRooms: AgentRoomRoom[] = [
   { id: 'team', name: 'AgentRoom 전략실', meta: '단체방 · 10라운드 프로토콜' },
   { id: 'gwamegi', name: '과메기', meta: '1:1 · PM / 통합' },

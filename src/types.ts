@@ -1,6 +1,7 @@
 export type Theme = 'classic-gray' | 'meadow-blue' | 'atelier';
 export type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'terminal' | 'settings';
 
+// Shared view-model types. Keep these UI-focused; avoid coupling them to server/API shapes.
 export type AppMeta = { title: string; icon: string; accent: string; summary: string };
 export type WindowState = { id: AppId; z: number; x: number; y: number; minimized?: boolean; maximized?: boolean };
 export type DragState = { id: AppId; startX: number; startY: number; originX: number; originY: number };
@@ -11,5 +12,7 @@ export type WorkCard = { title: string; status: string; description: string; lin
 export type AgentRoomRoom = { id: string; name: string; meta: string };
 export type AgentRoomMessage = { author: string; role: string; body: string };
 
+// js-dos is loaded at runtime from /public/js-dos instead of bundled by Vite.
+// The public API is intentionally minimal here because Eureka OS only needs start/stop/save hooks.
 export type DosPlayer = { stop?: () => Promise<void>; save?: () => Promise<unknown> };
 export type DosLauncher = (root: HTMLElement, options: Record<string, unknown>) => DosPlayer;

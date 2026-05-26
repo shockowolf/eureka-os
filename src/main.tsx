@@ -60,6 +60,8 @@ function App() {
   const minimizeWindow = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, minimized: true } : w)));
   const toggleMaximize = (id: AppId) => setWindows((current) => current.map((w) => (w.id === id ? { ...w, maximized: !w.maximized, minimized: false, z: maxZ + 1 } : w)));
 
+  // Global shortcuts keep the retro desktop usable without relying only on pointer interactions.
+  // Editable controls are ignored so notes/file inputs do not lose normal keyboard behavior.
   useEffect(() => {
     const isEditable = (target: EventTarget | null) => target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -303,6 +305,7 @@ function GameLab() {
   const playerRef = useRef<DosPlayer | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
+  // Stop the running emulator and release the object URL so local game files never linger in memory.
   const stopGame = useCallback(async () => {
     if (playerRef.current?.stop) await playerRef.current.stop();
     playerRef.current = null;
@@ -318,6 +321,8 @@ function GameLab() {
       .catch(() => setRegistry([]));
   }, []);
 
+  // js-dos is shipped as static browser assets under /public.
+  // That keeps Vite bundling simple and makes the WASM/emulator paths explicit for Caddy/static hosting.
   useEffect(() => {
     const cssId = 'js-dos-css';
     if (!document.getElementById(cssId)) {
@@ -354,6 +359,8 @@ function GameLab() {
     setRunnerMessage(file ? `${file.name} 선택됨. 서버 업로드 없이 이 브라우저에서만 실행합니다.` : '선택된 번들이 없습니다.');
   }, [stopGame]);
 
+  // Local-only execution: createObjectURL lets js-dos read the selected bundle without uploading it.
+  // IndexedDB persistence can be added later, but the first MVP intentionally requires explicit selection.
   const startGame = useCallback(async () => {
     if (!bundleFile || !dosRootRef.current || !window.Dos) return;
     await stopGame();
