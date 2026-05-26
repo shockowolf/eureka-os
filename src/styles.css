@@ -44,7 +44,22 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .start-menu p { margin: -2px 0 4px; color: #bfdbfe; font-size: 13px; }
 .start-menu button { display: flex; align-items: center; gap: 10px; text-align: left; }
 .start-menu button small { margin-left: auto; opacity: .72; font: 700 11px 'SFMono-Regular', Consolas, monospace; }
-@media (max-width: 760px) { .hero-panel { display: none; } .window { left: 50% !important; top: 44% !important; transform: translate(-50%, -50%); } .icons { grid-template-columns: repeat(2, 94px); } }
+@media (max-width: 760px) {
+  .hero-panel { display: none; }
+  .icons { left: 14px; top: 16px; grid-template-columns: repeat(3, minmax(74px, 1fr)); gap: 10px; width: calc(100% - 28px); }
+  .desktop-icon { width: auto; min-width: 74px; }
+  .desktop-icon span { width: 50px; height: 50px; border-radius: 14px; }
+  .desktop-icon b { font-size: 11px; }
+  .window { position: fixed; inset: 8px 8px 76px 8px !important; width: auto; max-height: none; transform: none; border-radius: 16px; }
+  .window.maximized { inset: 8px 8px 76px 8px !important; width: auto; max-height: none; transform: none; }
+  .content { max-height: calc(100svh - 160px); padding: 18px; font-size: 15px; overflow: auto; }
+  .card-row, .quick-link-grid, .agent-board, .work-grid { grid-template-columns: 1fr; }
+  .agentroom-shell { grid-template-columns: 1fr; }
+  .agentroom-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .agentroom-agents { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tasks button { max-width: 110px; font-size: 12px; padding: 9px 10px; }
+  time { display: none; }
+}
 
 .pixel-office { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; image-rendering: pixelated; }
 .pixel-office::before { content: ''; position: absolute; left: 8vw; right: 5vw; top: 12vh; bottom: 12vh; border: 3px solid rgba(255,255,255,.12); border-radius: 30px; background: linear-gradient(#22304a 0 26%, transparent 26%), repeating-linear-gradient(90deg, rgba(158, 105, 59, .88) 0 34px, rgba(126, 80, 44, .88) 34px 68px); box-shadow: inset 0 -80px 0 rgba(51, 31, 22, .22), 0 28px 80px rgba(0,0,0,.25); opacity: .46; }
@@ -274,3 +289,45 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .theme-classic-gray .agentroom-messages article { background: #f1f5f9; }
 .theme-classic-gray .agentroom-messages article.from-user { background: #dbeafe; }
 @media (max-width: 920px) { .agentroom-shell { grid-template-columns: 1fr; } .agentroom-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); } .agentroom-agents { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* User-resizable desktop windows. Browser-native resize is intentionally simple and stable. */
+.window {
+  min-width: 320px;
+  min-height: 240px;
+  resize: both;
+}
+.window.maximized {
+  resize: none;
+}
+
+/* Final mobile override: later than older media blocks, so it wins on phones. */
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .desktop { min-height: 100svh; overflow: auto; padding-bottom: 84px; }
+  .hero-panel { display: none; }
+  .icons { position: relative; left: auto; top: auto; width: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 12px; }
+  .desktop-icon { width: auto; min-width: 0; }
+  .desktop-icon span { width: 48px; height: 48px; border-radius: 14px; }
+  .desktop-icon b { font-size: 11px; }
+  .window,
+  .window.maximized {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: calc(100% - 16px) !important;
+    max-width: none;
+    min-width: 0;
+    height: auto !important;
+    min-height: 420px;
+    max-height: none;
+    margin: 8px;
+    transform: none !important;
+    resize: none;
+  }
+  .content { max-height: none; padding: 16px; font-size: 14px; overflow: visible; }
+  .agentroom-shell { grid-template-columns: 1fr; min-height: auto; }
+  .agentroom-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .agentroom-agents { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .agentroom-messages { max-height: 320px; }
+  .card-row, .quick-link-grid, .agent-board, .work-grid { grid-template-columns: 1fr; }
+}

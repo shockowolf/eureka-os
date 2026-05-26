@@ -201,16 +201,6 @@ function PixelOffice() {
   </section>;
 }
 
-const launcherActions: Record<AppId, string> = {
-  agentroom: 'Agent Room 열기',
-  uniplan: '계획 보기',
-  documents: '문서 서랍',
-  notes: '작업 로그',
-  gamelab: '게임 연구실',
-  terminal: '시스템 로그',
-  settings: '테마 바꾸기',
-};
-
 function StartMenu({ openApp }: { openApp: (id: AppId) => void }) {
   return <aside className="start-menu" role="menu">
     <strong>Eureka Launcher</strong>
