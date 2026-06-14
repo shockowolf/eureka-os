@@ -2,11 +2,13 @@ import React, { ChangeEvent, PointerEvent, useCallback, useEffect, useMemo, useR
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-import type { AppId, DosLauncher, DosPlayer, DragState, GameRegistryItem, Theme, WindowState } from './types';
+import type { AgentRoomMessage, AppId, DosLauncher, DosPlayer, DragState, GameRegistryItem, Theme, WindowState } from './types';
 import {
   agentCards,
+  agentRoomLocks,
   agentRoomMessages,
   agentRoomRooms,
+  agentRoomTasks,
   appOrder,
   apps,
   defaultNote,
@@ -259,26 +261,104 @@ function Notes() {
 
 function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
   const [roomId, setRoomId] = useState('team');
+  const [draft, setDraft] = useState('');
+  const [localMessages, setLocalMessages] = useState<AgentRoomMessage[]>([]);
   const currentRoom = agentRoomRooms.find((room) => room.id === roomId) || agentRoomRooms[0];
+  const visibleMessages = [...agentRoomMessages, ...localMessages].filter((message) => message.roomId === roomId);
+  const activeTasks = agentRoomTasks.filter((task) => task.status !== 'done');
+  const completedTasks = agentRoomTasks.filter((task) => task.status === 'done');
+  const approvalCount = agentRoomTasks.filter((task) => task.status === 'needs_approval').length;
 
-  return <div className="content agentroom-app"><h2>{apps.agentroom.title}</h2><p>{apps.agentroom.summary}</p>
+  const submitMessage = () => {
+    const body = draft.trim();
+    if (!body) return;
+    setLocalMessages((messages) => [...messages, { roomId, author: '고라니', role: 'Owner · local', tone: 'user', body }]);
+    setDraft('');
+  };
+
+  const sendToNotes = () => {
+    const transcript = visibleMessages.map((message) => `${message.author}(${message.role}): ${message.body}`).join('\n');
+    localStorage.setItem('eureka-notes', `[AgentRoom/${currentRoom.name}]\n${transcript}\n\n다음 액션:\n- 담당/락/승인 상태 확인\n- 완료 시 outbox에 검증 결과 남기기`);
+    openApp('notes');
+  };
+
+  return <div className="content agentroom-app">
+    <div className="agentroom-hero">
+      <div>
+        <p className="eyebrow">AI TEAM WORKROOM</p>
+        <h2>{apps.agentroom.title}</h2>
+        <p>{apps.agentroom.summary}</p>
+      </div>
+      <div className="agentroom-metrics" aria-label="AgentRoom status metrics">
+        <span><b>{agentRoomRooms.length}</b>rooms</span>
+        <span><b>{activeTasks.length}</b>active</span>
+        <span><b>{approvalCount}</b>approval</span>
+        <span><b>{completedTasks.length}</b>done</span>
+      </div>
+    </div>
+
     <section className="agentroom-shell">
       <aside className="agentroom-rooms" aria-label="Agent Room rooms">
-        {agentRoomRooms.map((room) => <button className={room.id === roomId ? 'active' : ''} key={room.id} onClick={() => setRoomId(room.id)}><strong>{room.name}</strong><span>{room.meta}</span></button>)}
+        {agentRoomRooms.map((room) => <button className={room.id === roomId ? 'active' : ''} key={room.id} onClick={() => setRoomId(room.id)}>
+          <strong>{room.name}</strong>
+          <span>{room.meta}</span>
+          <em className={`room-health ${room.health}`}>{room.health}</em>
+        </button>)}
       </aside>
+
       <main className="agentroom-chat">
-        <header><strong>{currentRoom.name}</strong><span>{currentRoom.meta}</span></header>
+        <header>
+          <div><strong>{currentRoom.name}</strong><span>{currentRoom.meta}</span></div>
+          <p>{currentRoom.purpose}</p>
+        </header>
         <div className="agentroom-messages">
-          {agentRoomMessages.map((message, index) => <article className={message.author === '고라니' ? 'from-user' : ''} key={index}><b>{message.author}</b><em>{message.role}</em><p>{message.body}</p></article>)}
+          {visibleMessages.map((message, index) => <article className={`${message.tone === 'user' ? 'from-user' : ''} ${message.tone || 'agent'}`} key={`${message.author}-${index}`}>
+            <b>{message.author}</b><em>{message.role}</em><p>{message.body}</p>
+          </article>)}
         </div>
-        <div className="agentroom-composer"><span>팀 모드 안건 입력</span><button onClick={() => openApp('notes')}>작업 노트로 보내기</button></div>
+        <form className="agentroom-composer" onSubmit={(event) => { event.preventDefault(); submitMessage(); }}>
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="고라니 지시 입력: 예) 니은은 UI, 사다새는 배포 확인해서 완료보고" />
+          <button type="submit">방에 남기기</button>
+          <button type="button" onClick={sendToNotes}>노트로 인계</button>
+        </form>
       </main>
+
       <aside className="agentroom-agents" aria-label="active agents">
-        {agentCards.map((agent) => <article key={agent.name} style={{ ['--card-accent' as string]: agent.accent }}><strong>{agent.name}</strong><span>{agent.role}</span><em>{agent.status}</em></article>)}
+        {agentCards.map((agent) => <article key={agent.name} style={{ ['--card-accent' as string]: agent.accent }}>
+          <strong>{agent.name}</strong><span>{agent.role}</span><em>{agent.status}</em><small>{agent.capability}</small><p>{agent.next}</p>
+        </article>)}
       </aside>
     </section>
-    <div className="handoff-strip"><b>운영 방식</b><span>긴 대화는 3000자 전후로 문맥 분할 · 긴 작업은 파일 인계 · 공개 전송은 확인 후 진행</span></div>
-    <div className="card-row"><button onClick={() => openApp('uniplan')}>계획 보드 열기</button><button onClick={() => openApp('notes')}>작업 노트 열기</button><button onClick={() => openApp('terminal')}>시스템 상태 보기</button></div></div>;
+
+    <section className="agentroom-ops-grid" aria-label="AgentRoom task and lock board">
+      <div className="agentroom-panel">
+        <h3>작업 상태판</h3>
+        {agentRoomTasks.map((task) => <article className={`agentroom-task ${task.status}`} key={task.id}>
+          <header><b>{task.id}</b><span>{task.status}</span></header>
+          <strong>{task.title}</strong>
+          <p>담당: {task.assignee} · 리소스: {task.resource}</p>
+          <small>다음: {task.next}</small>
+        </article>)}
+      </div>
+      <div className="agentroom-panel">
+        <h3>파일/배포 락</h3>
+        {agentRoomLocks.map((lock) => <article className={`agentroom-lock ${lock.mode}`} key={lock.resource}>
+          <header><b>{lock.mode}</b><span>{lock.holder}</span></header>
+          <strong>{lock.resource}</strong>
+          <p>{lock.reason}</p>
+          <small>유효: {lock.until}</small>
+        </article>)}
+      </div>
+      <div className="agentroom-panel approval-panel">
+        <h3>승인 게이트</h3>
+        <p>GitHub push, 실제 배포, 권한 변경, 삭제, 비용 발생 작업은 고라니 승인 전 대기합니다.</p>
+        <button onClick={() => openApp('terminal')}>검증 로그 보기</button>
+        <button onClick={() => openApp('uniplan')}>UniPlan 방으로 이동</button>
+      </div>
+    </section>
+
+    <div className="handoff-strip"><b>운영 방식</b><span>Telegram은 호출/요약용 · AgentRoom은 담당/상태/락/승인/완료보고 기준 · 실제 외부 반영은 승인 후 진행</span></div>
+  </div>;
 }
 
 function UniPlanApp({ openApp }: { openApp: (id: AppId) => void }) {

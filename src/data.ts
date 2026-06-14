@@ -1,8 +1,8 @@
-import type { AgentCard, AgentRoomMessage, AgentRoomRoom, AppId, AppMeta, LinkTarget, WindowState, WorkCard } from './types';
+import type { AgentCard, AgentRoomDecision, AgentRoomLock, AgentRoomMessage, AgentRoomPrompt, AgentRoomRoom, AgentRoomTask, AppId, AppMeta, LinkTarget, WindowState, WorkCard } from './types';
 
 // Static product metadata for the desktop shell. Dynamic/runtime state should stay in components.
 export const apps: Record<AppId, AppMeta> = {
-  agentroom: { title: 'Agent Room', icon: '◇', accent: '#7dd3fc', summary: 'Agent Room: 과메기, 수달, 산양과 프로젝트를 굴리는 작업방입니다.' },
+  agentroom: { title: 'Agent Room', icon: '◇', accent: '#7dd3fc', summary: 'Agent Room: 고라니와 AI 작업자들이 한 방에서 지시·분담·락·승인·완료보고를 보는 팀 전용 작업방입니다.' },
   uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
   documents: { title: '문서 서랍', icon: '▤', accent: '#fde68a', summary: 'Documents: 프로젝트 문서와 운영 링크를 차곡차곡 넣어두는 서랍입니다.' },
   notes: { title: '작업 노트', icon: '✧', accent: '#f0abfc', summary: 'Notes: 빠른 메모와 오늘의 작업 흔적을 브라우저에 저장합니다.' },
@@ -19,7 +19,7 @@ export const initialWindows: WindowState[] = [
   { id: 'agentroom', z: 1, x: 38, y: 25 },
 ];
 
-export const defaultNote = '오늘의 작업\n- Eureka OS 반응형 정리\n- Game Lab 안전 구조 보강\n- os.eureka.pe.kr 배포 상태 확인';
+export const defaultNote = '오늘의 작업\n- AgentRoom: 방/작업/락/승인/인계 UI 검증\n- UniPlan: ERP 업무 흐름을 새 구조로 재해석\n- Eureka OS: os.eureka.pe.kr 배포 상태 확인';
 
 // External links are opened with noopener/noreferrer in main.tsx; do not put secrets here.
 export const projectLinks: LinkTarget[] = [
@@ -27,38 +27,57 @@ export const projectLinks: LinkTarget[] = [
   { label: 'Eureka Growth', url: 'https://eureka.pe.kr/', description: '메인 랜딩 페이지' },
   { label: 'UniPlan Demo', url: 'https://uniplan.eureka.pe.kr/demo', description: '안정 배포된 AI DB 조회 데모' },
   { label: 'UniPlan Test', url: 'https://test.eureka.pe.kr/demo', description: '진행 중인 개발/검수용 데모' },
-  { label: 'ERP1 easiErp', url: 'https://erp1.eureka.pe.kr/', description: 'easiErp 복구/테스트 환경' },
-  { label: 'ERP2 gootzERP', url: 'https://erp2.eureka.pe.kr/', description: 'gootzERP 복구/테스트 환경' },
+  { label: 'ERP1 easiErp', url: 'https://erp1.eureka.pe.kr/', description: 'easiErp 참조/분석 환경' },
+  { label: 'ERP2 gootzERP', url: 'https://erp2.eureka.pe.kr/', description: 'gootzERP 제조·렌탈 흐름 참조 환경' },
 ];
 
 export const agentCards: AgentCard[] = [
-  { name: '과메기', role: 'PM / 통합', status: '작업 흐름 정리', next: '큰 작업은 짧은 인계와 검증 결과로 묶기', accent: '#7dd3fc' },
-  { name: '수달', role: '코딩 / 패치', status: '구현 대기', next: 'UI 기능·버그수정·빌드 검증', accent: '#a7f3d0' },
-  { name: '산양', role: '리서치 / 검토', status: '조사 대기', next: '시장/정책/기술 근거 확인', accent: '#fde68a' },
-  { name: '공작', role: 'UI / 브랜드', status: '디자인 감각 보정', next: '레트로 감성은 살리고 가독성 유지', accent: '#f0abfc' },
+  { name: '과메기', role: 'PM / 오케스트레이터', status: '클로징 담당', next: '최대 10라운드 안에서 결론·액션 정리', capability: '분해·배정·최종판단', accent: '#7dd3fc' },
+  { name: '니은', role: '구현 / 패치', status: 'AgentRoom UI 작업 중', next: 'UI 기능·빌드 검증·인계 기록', capability: '코드 수정·테스트', accent: '#a7f3d0' },
+  { name: '사다새', role: '서버 / 리서치', status: '배포·소스 위치 확인', next: 'GitHub/서버 상태와 충돌 위험 확인', capability: '운영·문서·서버', accent: '#fde68a' },
+  { name: '공작', role: 'UI / 브랜드', status: '디자인 감각 보정', next: '레트로 감성은 살리고 가독성 유지', capability: '디자인 리뷰', accent: '#f0abfc' },
+  { name: '고슴도치', role: '보안 / 승인', status: '위험 작업 감시', next: '삭제·권한·외부전송·비용 작업 승인 게이트', capability: '리스크 체크', accent: '#fb7185' },
 ];
 
 export const workCards: WorkCard[] = [
   { title: '안정 Demo', status: 'public', description: '말로 DB를 조회하는 UniPlan 공개 데모.', linkLabel: 'demo 열기', url: 'https://uniplan.eureka.pe.kr/demo' },
   { title: '입력 화면', status: 'public', description: '거래처/품목/청구 입력 MVP.', linkLabel: 'input 열기', url: 'https://uniplan.eureka.pe.kr/input' },
   { title: '개발 Test', status: 'dev', description: '진행 중인 변경은 이쪽에서 먼저 검수.', linkLabel: 'test 열기', url: 'https://test.eureka.pe.kr/demo' },
-  { title: 'ERP 복구', status: 'ops', description: 'ERP1/ERP2 운영 복구 상태 확인용.', linkLabel: 'ERP1 열기', url: 'https://erp1.eureka.pe.kr/' },
+  { title: 'ERP 참조', status: 'analysis', description: 'easiERP/erpGOOTZ는 운영 복제가 아니라 UniPlan 설계 참조용.', linkLabel: 'ERP1 열기', url: 'https://erp1.eureka.pe.kr/' },
 ];
 
-// Agent Room preview data mirrors the real mobile AgentRoom concept without requiring backend wiring yet.
+// Agent Room preview data mirrors the intended app workflow without requiring backend wiring yet.
 export const agentRoomRooms: AgentRoomRoom[] = [
-  { id: 'team', name: 'AgentRoom 전략실', meta: '단체방 · 10라운드 프로토콜' },
-  { id: 'gwamegi', name: '과메기', meta: '1:1 · PM / 통합' },
-  { id: 'sudal', name: '수달', meta: '1:1 · Dev / 구현' },
-  { id: 'sanyang', name: '산양', meta: '1:1 · Research / 근거' },
+  { id: 'team', name: 'AgentRoom 전략실', meta: '단체방 · 10라운드 프로토콜', purpose: '고라니가 짧게 지시하면 AI들이 작업으로 바꾸고 맡아 처리하는 기본 방', health: 'active' },
+  { id: 'agentroom-dev', name: 'AgentRoom 개발방', meta: 'Eureka OS · MVP', purpose: '앱 화면, 빌드, 배포, 동기화 방식을 검증하는 개발방', health: 'review' },
+  { id: 'uniplan', name: 'UniPlan 사업방', meta: 'AI ERP/AX', purpose: 'ERP 업무 흐름을 새 이름·새 구조·새 UX로 재해석하는 방', health: 'quiet' },
+  { id: 'ops', name: '서버/배포 상황실', meta: '사다새 · 비버', purpose: '도메인, 컨테이너, GitHub, 배포 체크를 모으는 방', health: 'blocked' },
 ];
 
 export const agentRoomMessages: AgentRoomMessage[] = [
-  { author: '고라니', role: 'Owner', body: '텔레그램 대신 우리가 쓸 AI 작업 콘솔을 만들자.' },
-  { author: '과메기', role: 'PM · 1R', body: '의제 설정: 상시 회의가 아니라 필요할 때 켜지는 전략실로 간다.' },
-  { author: '수달', role: 'Dev · 2R', body: '방, 메시지, 작업 상태부터 잡으면 되겠구먼. 실제 연결 전에도 UX를 검증할 수 있소.' },
-  { author: '산양', role: 'Research · 2R', body: '메에. 사용자는 회의 로그보다 결론을 원해. 과메기 클로징을 기본으로 보여줘.' },
-  { author: '과메기', role: 'PM · 10R', body: '클로징: capability 기반 라우팅, 히스토리 보존, 최대 10라운드 안에서 닫는다.' },
+  { roomId: 'team', author: '고라니', role: 'Owner', tone: 'user', body: '텔레그램 대신 우리가 쓸 AI 작업 콘솔을 만들자.' },
+  { roomId: 'team', author: '과메기', role: 'PM · 1R', tone: 'agent', body: '의제 설정: 상시 회의가 아니라 필요할 때 켜지는 조용한 작업실로 간다.' },
+  { roomId: 'team', author: '니은', role: '구현 · 2R', tone: 'agent', body: '방 목록, 채팅, 작업 상태, 파일 락, 승인 대기, 완료 보고를 한 화면에 묶겠습니다.' },
+  { roomId: 'team', author: '사다새', role: '서버 · 2R', tone: 'agent', body: 'Telegram은 알림/호출용, 실제 기준은 AgentRoom 상태판과 Git 이력으로 두는 편이 안전합니다.' },
+  { roomId: 'team', author: '과메기', role: 'PM · 10R', tone: 'decision', body: '클로징: 필요한 봇만 호출하고, 담당·락·검증·후속작업을 남긴 뒤 조용히 닫는다.' },
+  { roomId: 'agentroom-dev', author: '니은', role: '구현', tone: 'agent', body: 'GitHub shockowolf/eureka-os 안에 AgentRoom 화면이 있음을 확인. 웹 MVP를 완성형으로 보강 중입니다.' },
+  { roomId: 'agentroom-dev', author: '사다새', role: '서버', tone: 'system', body: '이전 Oracle 검색에서는 앱 소스가 미발견이었고, GitHub 확인 후 eureka-os 경로가 기준 후보가 되었습니다.' },
+  { roomId: 'uniplan', author: '고라니', role: 'Owner', tone: 'user', body: 'easiERP/erpGOOTZ는 복제 운영이 아니라 UniPlan 설계를 위한 업무 흐름 참고 자료다.' },
+  { roomId: 'uniplan', author: '니은', role: '정리', tone: 'decision', body: '명칭·코드·표현을 그대로 가져오지 않고 새 기능명/새 구조/AI ERP UX로 변환한다.' },
+  { roomId: 'ops', author: '사다새', role: '서버', tone: 'system', body: 'm1max SSH는 현재 키 권한이 없어 직접 접근 불가. GitHub 공개 저장소 기준으로 작업한다.' },
+];
+
+export const agentRoomTasks: AgentRoomTask[] = [
+  { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'in_progress', resource: 'eureka-os/src/*', next: '작업/락/승인/인계 UI 추가 후 빌드' },
+  { id: 'AR-002', title: 'GitHub 원본 위치 확인', assignee: '니은+사다새', status: 'done', resource: 'shockowolf/eureka-os', next: '로컬 작업본 기준으로 검증' },
+  { id: 'AR-003', title: 'GitHub 커밋/푸시', assignee: '사다새', status: 'in_progress', resource: 'github push', next: '고라니 승인 확인됨. 빌드 검증 후 커밋/푸시' },
+  { id: 'AR-004', title: 'm1max 작업본 확인', assignee: '사다새', status: 'blocked', resource: 'tailscale:ssh m1max', next: 'SSH 키 또는 저장소 위치 필요' },
+];
+
+export const agentRoomLocks: AgentRoomLock[] = [
+  { resource: 'eureka-os/src/main.tsx', holder: '니은', mode: 'exclusive', until: '빌드 검증까지', reason: 'AgentRoom 컴포넌트 구조 변경' },
+  { resource: 'bot-collab/status.md,outbox.md', holder: '니은+사다새', mode: 'shared', until: '작업 종료', reason: '새 협업 로그만 추가' },
+  { resource: 'github push', holder: '사다새', mode: 'exclusive', until: '커밋/푸시 완료', reason: '고라니 승인 후 GitHub 반영 진행' },
 ];
 
 export const launcherActions: Record<AppId, string> = {
