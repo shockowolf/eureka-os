@@ -2,7 +2,7 @@ import type { AgentCard, AgentRoomDecision, AgentRoomLock, AgentRoomMessage, Age
 
 // Static product metadata for the desktop shell. Dynamic/runtime state should stay in components.
 export const apps: Record<AppId, AppMeta> = {
-  agentroom: { title: 'Agent Room', icon: '◇', accent: '#7dd3fc', summary: 'Agent Room: 고라니와 AI 작업자들이 한 방에서 지시·분담·락·승인·완료보고를 보는 팀 전용 작업방입니다.' },
+  agentroom: { title: 'AgentRoom', icon: '◇', accent: '#7dd3fc', summary: 'AgentRoom: 고라니와 AI 작업자들이 한 방에서 지시·분담·락·승인·완료보고를 보고, 최종 요약/TODO/결정까지 남기는 팀 전용 작업 콘솔입니다.' },
   uniplan: { title: '계획 보드', icon: '▣', accent: '#a7f3d0', summary: 'UniPlan: 계획, 일정, 아이디어를 한 장의 보드로 모읍니다.' },
   documents: { title: '문서 서랍', icon: '▤', accent: '#fde68a', summary: 'Documents: 프로젝트 문서와 운영 링크를 차곡차곡 넣어두는 서랍입니다.' },
   notes: { title: '작업 노트', icon: '✧', accent: '#f0abfc', summary: 'Notes: 빠른 메모와 오늘의 작업 흔적을 브라우저에 저장합니다.' },
@@ -56,10 +56,10 @@ export const agentRoomRooms: AgentRoomRoom[] = [
 
 export const agentRoomMessages: AgentRoomMessage[] = [
   { roomId: 'team', author: '고라니', role: 'Owner', tone: 'user', body: '텔레그램 대신 우리가 쓸 AI 작업 콘솔을 만들자.' },
-  { roomId: 'team', author: '과메기', role: 'PM · 1R', tone: 'agent', body: '의제 설정: 상시 회의가 아니라 필요할 때 켜지는 조용한 작업실로 간다.' },
-  { roomId: 'team', author: '니은', role: '구현 · 2R', tone: 'agent', body: '방 목록, 채팅, 작업 상태, 파일 락, 승인 대기, 완료 보고를 한 화면에 묶겠습니다.' },
-  { roomId: 'team', author: '사다새', role: '서버 · 2R', tone: 'agent', body: 'Telegram은 알림/호출용, 실제 기준은 AgentRoom 상태판과 Git 이력으로 두는 편이 안전합니다.' },
-  { roomId: 'team', author: '과메기', role: 'PM · 10R', tone: 'decision', body: '클로징: 필요한 봇만 호출하고, 담당·락·검증·후속작업을 남긴 뒤 조용히 닫는다.' },
+  { roomId: 'team', author: '과메기', role: 'PM · R1', tone: 'agent', body: '의제 설정: 채팅을 입구로 두되, 작업 카드가 결론과 승인 상태를 항상 드러내게 간다.' },
+  { roomId: 'team', author: '니은', role: '구현 · R2', tone: 'agent', body: '방 목록, 채팅, 작업 상태, 파일 락, 승인 대기, 완료 보고를 한 화면에 묶고 R10 클로징은 작업 요약으로 승격합니다.' },
+  { roomId: 'team', author: '사다새', role: '서버 · R2', tone: 'agent', body: 'Telegram은 알림/호출용, 실제 기준은 AgentRoom 상태판과 Git 이력으로 두고 Gateway/배포 인증 상태는 별도로 보여주는 편이 안전합니다.' },
+  { roomId: 'team', author: '과메기', role: 'PM · R10', tone: 'decision', body: '클로징: chat-first는 유지하되 Summary, TODO, Decision, Approval을 방 상세의 1급 정보로 올린다.' },
   { roomId: 'agentroom-dev', author: '니은', role: '구현', tone: 'agent', body: 'GitHub shockowolf/eureka-os 안에 AgentRoom 화면이 있음을 확인. 웹 MVP를 완성형으로 보강 중입니다.' },
   { roomId: 'agentroom-dev', author: '사다새', role: '서버', tone: 'system', body: '이전 Oracle 검색에서는 앱 소스가 미발견이었고, GitHub 확인 후 eureka-os 경로가 기준 후보가 되었습니다.' },
   { roomId: 'uniplan', author: '고라니', role: 'Owner', tone: 'user', body: 'easiERP/erpGOOTZ는 복제 운영이 아니라 UniPlan 설계를 위한 업무 흐름 참고 자료다.' },
@@ -68,7 +68,7 @@ export const agentRoomMessages: AgentRoomMessage[] = [
 ];
 
 export const agentRoomTasks: AgentRoomTask[] = [
-  { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'in_progress', resource: 'eureka-os/src/*', next: '작업/락/승인/인계 UI 추가 후 빌드' },
+  { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'needs_approval', resource: 'eureka-os/src/*', next: '작업 카드/승인/TODO/Decision UI 확인 후 배포 판단', finalSummary: 'chat-first 작업방을 유지하면서 R10 최종 요약, TODO, 최근 결정, 승인 CTA를 방 안에서 바로 보이게 만든다.', approvalState: 'pending', todos: ['S25 실기기에서 키보드/스크롤/Gateway 연결 확인', '외부 배포 전 Tailscale 기본값과 Android 권한 분리', '승인 이벤트를 모바일 승인 큐와 연결'], decisions: ['AgentRoom은 상시 회의실이 아니라 필요할 때 켜지는 AI 작업 콘솔로 간다.', '고정 멤버보다 capability 기반 담당자 라우팅을 우선한다.'] },
   { id: 'AR-002', title: 'GitHub 원본 위치 확인', assignee: '니은+사다새', status: 'done', resource: 'shockowolf/eureka-os', next: '로컬 작업본 기준으로 검증' },
   { id: 'AR-003', title: 'GitHub 커밋/푸시', assignee: '사다새', status: 'in_progress', resource: 'github push', next: '고라니 승인 확인됨. 빌드 검증 후 커밋/푸시' },
   { id: 'AR-004', title: 'm1max 작업본 확인', assignee: '사다새', status: 'blocked', resource: 'tailscale:ssh m1max', next: 'SSH 키 또는 저장소 위치 필요' },

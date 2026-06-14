@@ -268,6 +268,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
   const activeTasks = agentRoomTasks.filter((task) => task.status !== 'done');
   const completedTasks = agentRoomTasks.filter((task) => task.status === 'done');
   const approvalCount = agentRoomTasks.filter((task) => task.status === 'needs_approval').length;
+  const focusTask = agentRoomTasks.find((task) => task.status === 'needs_approval') || activeTasks[0] || agentRoomTasks[0];
 
   const submitMessage = () => {
     const body = draft.trim();
@@ -296,6 +297,23 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
         <span><b>{completedTasks.length}</b>done</span>
       </div>
     </div>
+
+    {focusTask ? <section className="agentroom-focus-card" aria-label="AgentRoom focused task">
+      <div>
+        <p className="eyebrow">AI 작업 카드</p>
+        <h3>{focusTask.title}</h3>
+        <p>{focusTask.finalSummary || focusTask.next}</p>
+      </div>
+      <div className="agentroom-focus-meta">
+        <span>{focusTask.status}</span>
+        <span>{focusTask.assignee}</span>
+        <span>{focusTask.approvalState || 'approval none'}</span>
+      </div>
+      <div className="agentroom-focus-grid">
+        <section><b>TODO</b>{(focusTask.todos || [focusTask.next]).slice(0, 3).map((todo) => <p key={todo}>• {todo}</p>)}</section>
+        <section><b>Decision</b>{(focusTask.decisions || ['담당·락·검증·후속작업을 상태판에 남긴다.']).map((decision) => <p key={decision}>• {decision}</p>)}</section>
+      </div>
+    </section> : null}
 
     <section className="agentroom-shell">
       <aside className="agentroom-rooms" aria-label="Agent Room rooms">
@@ -351,7 +369,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
       </div>
       <div className="agentroom-panel approval-panel">
         <h3>승인 게이트</h3>
-        <p>GitHub push, 실제 배포, 권한 변경, 삭제, 비용 발생 작업은 고라니 승인 전 대기합니다.</p>
+        <p>최종 요약이 생기면 방 안에서 승인 / 수정 요청 / 거절을 바로 처리한다. GitHub push, 실제 배포, 권한 변경, 삭제, 비용 발생 작업은 고라니 승인 전 대기합니다.</p>
         <button onClick={() => openApp('terminal')}>검증 로그 보기</button>
         <button onClick={() => openApp('uniplan')}>UniPlan 방으로 이동</button>
       </div>

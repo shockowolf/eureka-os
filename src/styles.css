@@ -273,6 +273,14 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-metrics { display: grid; grid-template-columns: repeat(2, minmax(74px, 1fr)); gap: 8px; min-width: 190px; }
 .agentroom-metrics span { display: grid; place-items: center; padding: 10px; border-radius: 14px; background: rgba(2,6,23,.28); font-size: 11px; color: var(--muted); text-transform: uppercase; }
 .agentroom-metrics b { display: block; color: #e0f2fe; font-size: 22px; line-height: 1; }
+.agentroom-focus-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(135deg, rgba(125,211,252,.16), rgba(167,243,208,.10)); }
+.agentroom-focus-card h3 { margin: 2px 0 6px; }
+.agentroom-focus-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+.agentroom-focus-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.agentroom-focus-meta span { padding: 7px 9px; border-radius: 999px; border: 1px solid rgba(125,211,252,.45); background: rgba(125,211,252,.12); color: #bae6fd; font-size: 11px; font-weight: 800; }
+.agentroom-focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.agentroom-focus-grid section { display: grid; gap: 4px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.20); }
+.agentroom-focus-grid b { color: #bae6fd; font-size: 12px; }
 .agentroom-shell { display: grid; grid-template-columns: 180px minmax(320px, 1fr) 210px; gap: 12px; min-height: 430px; }
 .agentroom-rooms, .agentroom-chat, .agentroom-agents, .agentroom-panel { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.08); overflow: hidden; }
 .agentroom-rooms { display: grid; align-content: start; gap: 8px; padding: 8px; }
@@ -313,16 +321,16 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-lock.exclusive { border-left-color: #fb7185; }
 .agentroom-lock.shared { border-left-color: #a7f3d0; }
 .approval-panel { background: linear-gradient(135deg, rgba(253,230,138,.14), rgba(251,113,133,.1)); }
-.theme-classic-gray .agentroom-hero, .theme-classic-gray .agentroom-rooms, .theme-classic-gray .agentroom-chat, .theme-classic-gray .agentroom-agents, .theme-classic-gray .agentroom-panel { background: #fff; border-color: #94a3b8; }
+.theme-classic-gray .agentroom-hero, .theme-classic-gray .agentroom-focus-card, .theme-classic-gray .agentroom-rooms, .theme-classic-gray .agentroom-chat, .theme-classic-gray .agentroom-agents, .theme-classic-gray .agentroom-panel { background: #fff; border-color: #94a3b8; }
 .theme-classic-gray .agentroom-metrics span, .theme-classic-gray .agentroom-task, .theme-classic-gray .agentroom-lock { background: #f8fafc; }
 .theme-classic-gray .agentroom-metrics b { color: #0369a1; }
-.theme-classic-gray .agentroom-rooms span, .theme-classic-gray .agentroom-agents span, .theme-classic-gray .agentroom-chat header span, .theme-classic-gray .agentroom-chat header p, .theme-classic-gray .agentroom-composer input, .theme-classic-gray .agentroom-agents small, .theme-classic-gray .agentroom-task small, .theme-classic-gray .agentroom-lock small { color: #475569; }
+.theme-classic-gray .agentroom-focus-card p, .theme-classic-gray .agentroom-rooms span, .theme-classic-gray .agentroom-agents span, .theme-classic-gray .agentroom-chat header span, .theme-classic-gray .agentroom-chat header p, .theme-classic-gray .agentroom-composer input, .theme-classic-gray .agentroom-agents small, .theme-classic-gray .agentroom-task small, .theme-classic-gray .agentroom-lock small { color: #475569; }
 .theme-classic-gray .agentroom-composer input { background: #f8fafc; }
 .theme-classic-gray .agentroom-messages article { background: #f1f5f9; }
 .theme-classic-gray .agentroom-messages article.from-user { background: #dbeafe; }
 .theme-classic-gray .agentroom-messages article.decision { background: #dcfce7; }
 .theme-classic-gray .agentroom-messages article.system { background: #fef9c3; }
-@media (max-width: 1100px) { .agentroom-shell, .agentroom-ops-grid { grid-template-columns: 1fr; } .agentroom-rooms, .agentroom-agents { grid-template-columns: repeat(2, minmax(0, 1fr)); } .agentroom-metrics { min-width: 0; } }
+@media (max-width: 1100px) { .agentroom-shell, .agentroom-ops-grid, .agentroom-focus-grid { grid-template-columns: 1fr; } .agentroom-rooms, .agentroom-agents { grid-template-columns: repeat(2, minmax(0, 1fr)); } .agentroom-metrics { min-width: 0; } }
 @media (max-width: 720px) { .agentroom-hero { display: grid; } .agentroom-metrics, .agentroom-composer { grid-template-columns: 1fr; } }
 
 /* User-resizable desktop windows. Browser-native resize is intentionally simple and stable. */
