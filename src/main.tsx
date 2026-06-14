@@ -266,6 +266,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
   const [draft, setDraft] = useState('');
   const [localMessages, setLocalMessages] = useState<AgentRoomMessage[]>([]);
   const [localTasks, setLocalTasks] = useState<typeof agentRoomTasks>([]);
+  const nextLocalTaskId = useRef(1);
   const currentRoom = agentRoomRooms.find((room) => room.id === roomId) || agentRoomRooms[0];
   const visibleMessages = [...agentRoomMessages, ...localMessages].filter((message) => message.roomId === roomId);
   const allTasks = [...agentRoomTasks, ...localTasks];
@@ -281,16 +282,26 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
     setDraft('');
   };
 
+  const saveAgentRoomNote = (content: string) => {
+    try {
+      const previous = localStorage.getItem('eureka-notes');
+      const next = previous ? `${previous}\n\n---\n${content}` : content;
+      localStorage.setItem('eureka-notes', next);
+      openApp('notes');
+    } catch {
+      setLocalMessages((messages) => [...messages, { roomId, author: 'AgentRoom', role: 'Storage', tone: 'system', body: '브라우저 저장소에 쓸 수 없어 노트 인계를 완료하지 못했습니다. 현재 방에서 내용을 복사해 주세요.' }]);
+    }
+  };
+
   const sendToNotes = () => {
     const transcript = visibleMessages.map((message) => `${message.author}(${message.role}): ${message.body}`).join('\n');
-    localStorage.setItem('eureka-notes', `[AgentRoom/${currentRoom.name}]\n${transcript}\n\n다음 액션:\n- 담당/락/승인 상태 확인\n- 완료 시 outbox에 검증 결과 남기기`);
-    openApp('notes');
+    saveAgentRoomNote(`[AgentRoom/${currentRoom.name}]\n${transcript}\n\n다음 액션:\n- 담당/락/승인 상태 확인\n- 완료 시 outbox에 검증 결과 남기기`);
   };
 
   const createTaskFromDraft = () => {
     const title = draft.trim();
     if (!title) return;
-    const id = `LOCAL-${String(localTasks.length + 1).padStart(2, '0')}`;
+    const id = `LOCAL-${Date.now().toString(36)}-${nextLocalTaskId.current++}`;
     setLocalTasks((tasks) => [...tasks, { id, title, assignee: '과메기 배정 대기', status: 'open', priority: 'normal', resource: currentRoom.name, next: '담당자 지정 후 진행' }]);
     setLocalMessages((messages) => [...messages, { roomId, author: 'AgentRoom', role: 'Task router', tone: 'system', body: `${id} 작업 카드로 등록했습니다: ${title}` }]);
     setDraft('');
@@ -298,8 +309,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
 
   const exportSyncSnapshot = () => {
     const taskLines = allTasks.map((task) => `- ${task.id} [${task.status}] ${task.title} / ${task.assignee} / ${task.next}`).join('\n');
-    localStorage.setItem('eureka-notes', `[AgentRoom Sync Snapshot]\n방: ${currentRoom.name}\n활성 작업: ${activeTasks.length}\n승인 대기: ${approvalCount}\n\n${taskLines}`);
-    openApp('notes');
+    saveAgentRoomNote(`[AgentRoom Sync Snapshot]\n방: ${currentRoom.name}\n활성 작업: ${activeTasks.length}\n승인 대기: ${approvalCount}\n\n${taskLines}`);
   };
 
   return <div className="content agentroom-app">
