@@ -70,15 +70,15 @@ export const agentRoomMessages: AgentRoomMessage[] = [
 export const agentRoomTasks: AgentRoomTask[] = [
   { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'done', priority: 'high', resource: 'eureka-os/src/*', next: '웹 MVP UI는 반영 완료. 실기기/Gateway 연결은 후속 검증', finalSummary: 'chat-first 작업방을 유지하면서 R10 최종 요약, TODO, 최근 결정, 승인 CTA를 방 안에서 바로 보이게 만든다.', approvalState: 'approved', todos: ['S25 실기기에서 키보드/스크롤/Gateway 연결 확인', '외부 배포 전 Tailscale 기본값과 Android 권한 분리', '승인 이벤트를 모바일 승인 큐와 연결'], decisions: ['AgentRoom은 상시 회의실이 아니라 필요할 때 켜지는 AI 작업 콘솔로 간다.', '고정 멤버보다 capability 기반 담당자 라우팅을 우선한다.'] },
   { id: 'AR-002', title: 'GitHub 원본 위치 확인', assignee: '니은+사다새', status: 'done', priority: 'normal', resource: 'shockowolf/eureka-os', next: '로컬 작업본 기준으로 검증' },
-  { id: 'AR-003', title: 'GitHub 커밋/푸시', assignee: '사다새+니은', status: 'done', priority: 'high', resource: 'github push', next: '52af184 main 반영 완료. 이후 변경은 리뷰 후 추가 커밋' },
+  { id: 'AR-003', title: 'GitHub 커밋/푸시', assignee: '사다새+니은', status: 'done', priority: 'high', resource: 'github main', next: 'AgentRoom 리뷰 수정까지 main 반영 완료. 이후 변경은 새 작업 카드로 진행' },
   { id: 'AR-004', title: 'm1max 작업본 확인', assignee: '사다새', status: 'blocked', priority: 'normal', resource: 'tailscale:ssh m1max', next: 'SSH 키 또는 저장소 위치 필요' },
   { id: 'AR-005', title: '실서비스 배포 승인', assignee: '고라니+사다새', status: 'needs_approval', priority: 'high', resource: 'os.eureka.pe.kr deploy', next: '배포 대상/롤백/검증 로그 확인 후 별도 승인' },
 ];
 
 export const agentRoomLocks: AgentRoomLock[] = [
-  { resource: 'eureka-os/src/*', holder: '사다새', mode: 'exclusive', until: '코드 리뷰/검증 커밋 완료', reason: 'AgentRoom 변경분 최종 점검' },
+  { resource: 'eureka-os/src/*', holder: '사다새', mode: 'shared', until: '다음 UI 변경 전까지', reason: 'AgentRoom 변경분 리뷰 기준' },
   { resource: 'bot-collab/status.md,outbox.md', holder: '니은+사다새', mode: 'shared', until: '작업 종료', reason: '새 협업 로그만 추가' },
-  { resource: 'github push', holder: 'released', mode: 'exclusive', until: '완료', reason: '52af184 GitHub 반영 완료. 추가 반영은 리뷰 후 진행' },
+  { resource: 'github main', holder: 'released', mode: 'shared', until: '다음 배포 전까지', reason: 'GitHub 반영 완료 이력과 후속 변경 기준' },
 ];
 
 export const agentRoomDecisions: AgentRoomDecision[] = [
