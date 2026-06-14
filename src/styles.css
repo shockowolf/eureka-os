@@ -281,6 +281,8 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .agentroom-focus-grid section { display: grid; gap: 4px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.20); }
 .agentroom-focus-grid b { color: #bae6fd; font-size: 12px; }
+.agentroom-quickbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: rgba(2,6,23,.14); }
+.agentroom-quickbar button { padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.1); color: inherit; cursor: pointer; }
 .agentroom-shell { display: grid; grid-template-columns: 180px minmax(320px, 1fr) 210px; gap: 12px; min-height: 430px; }
 .agentroom-rooms, .agentroom-chat, .agentroom-agents, .agentroom-panel { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.08); overflow: hidden; }
 .agentroom-rooms { display: grid; align-content: start; gap: 8px; padding: 8px; }
@@ -303,28 +305,31 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-messages article.system { border-color: rgba(253,230,138,.5); background: rgba(253,230,138,.12); }
 .agentroom-messages em, .agentroom-agents em { color: #bbf7d0; font-size: 11px; font-style: normal; }
 .agentroom-messages p, .agentroom-agents p, .agentroom-panel p { margin: 0; font-size: 13px; line-height: 1.55; }
-.agentroom-composer { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); }
+.agentroom-composer { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--line); }
 .agentroom-composer input { min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(2,6,23,.28); color: inherit; }
 .agentroom-composer button, .agentroom-panel button { padding: 9px 11px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.1); cursor: pointer; color: inherit; }
 .agentroom-agents { display: grid; align-content: start; gap: 8px; padding: 10px; }
 .agentroom-agents article { display: grid; gap: 4px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.08); box-shadow: inset 3px 0 0 var(--card-accent); }
 .agentroom-agents small, .agentroom-task small, .agentroom-lock small { color: var(--muted); font-size: 11px; }
-.agentroom-ops-grid { display: grid; grid-template-columns: 1.35fr 1fr .9fr; gap: 12px; }
+.agentroom-ops-grid { display: grid; grid-template-columns: 1.25fr 1fr .85fr 1fr; gap: 12px; }
 .agentroom-panel { display: grid; align-content: start; gap: 9px; padding: 12px; }
 .agentroom-panel h3 { margin: 0; }
-.agentroom-task, .agentroom-lock { display: grid; gap: 5px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.18); border-left: 4px solid #94a3b8; }
-.agentroom-task header, .agentroom-lock header { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+.agentroom-task, .agentroom-lock, .agentroom-decision { display: grid; gap: 5px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.18); border-left: 4px solid #94a3b8; }
+.agentroom-task header, .agentroom-lock header, .agentroom-decision header { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
 .agentroom-task.in_progress { border-left-color: #7dd3fc; }
 .agentroom-task.done { border-left-color: #86efac; }
 .agentroom-task.blocked { border-left-color: #fca5a5; }
 .agentroom-task.needs_approval { border-left-color: #fde68a; }
 .agentroom-lock.exclusive { border-left-color: #fb7185; }
 .agentroom-lock.shared { border-left-color: #a7f3d0; }
+.agentroom-decision.decided { border-left-color: #86efac; }
+.agentroom-decision.pending { border-left-color: #fde68a; }
+.agentroom-decision.blocked { border-left-color: #fca5a5; }
 .approval-panel { background: linear-gradient(135deg, rgba(253,230,138,.14), rgba(251,113,133,.1)); }
 .theme-classic-gray .agentroom-hero, .theme-classic-gray .agentroom-focus-card, .theme-classic-gray .agentroom-rooms, .theme-classic-gray .agentroom-chat, .theme-classic-gray .agentroom-agents, .theme-classic-gray .agentroom-panel { background: #fff; border-color: #94a3b8; }
-.theme-classic-gray .agentroom-metrics span, .theme-classic-gray .agentroom-task, .theme-classic-gray .agentroom-lock { background: #f8fafc; }
+.theme-classic-gray .agentroom-metrics span, .theme-classic-gray .agentroom-task, .theme-classic-gray .agentroom-lock, .theme-classic-gray .agentroom-decision, .theme-classic-gray .agentroom-quickbar { background: #f8fafc; }
 .theme-classic-gray .agentroom-metrics b { color: #0369a1; }
-.theme-classic-gray .agentroom-focus-card p, .theme-classic-gray .agentroom-rooms span, .theme-classic-gray .agentroom-agents span, .theme-classic-gray .agentroom-chat header span, .theme-classic-gray .agentroom-chat header p, .theme-classic-gray .agentroom-composer input, .theme-classic-gray .agentroom-agents small, .theme-classic-gray .agentroom-task small, .theme-classic-gray .agentroom-lock small { color: #475569; }
+.theme-classic-gray .agentroom-focus-card p, .theme-classic-gray .agentroom-rooms span, .theme-classic-gray .agentroom-agents span, .theme-classic-gray .agentroom-chat header span, .theme-classic-gray .agentroom-chat header p, .theme-classic-gray .agentroom-composer input, .theme-classic-gray .agentroom-agents small, .theme-classic-gray .agentroom-task small, .theme-classic-gray .agentroom-lock small, .theme-classic-gray .agentroom-decision small { color: #475569; }
 .theme-classic-gray .agentroom-composer input { background: #f8fafc; }
 .theme-classic-gray .agentroom-messages article { background: #f1f5f9; }
 .theme-classic-gray .agentroom-messages article.from-user { background: #dbeafe; }
@@ -374,3 +379,4 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
   .agentroom-messages { max-height: 320px; }
   .card-row, .quick-link-grid, .agent-board, .work-grid { grid-template-columns: 1fr; }
 }
+

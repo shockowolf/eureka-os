@@ -5,8 +5,10 @@ import './styles.css';
 import type { AgentRoomMessage, AppId, DosLauncher, DosPlayer, DragState, GameRegistryItem, Theme, WindowState } from './types';
 import {
   agentCards,
+  agentRoomDecisions,
   agentRoomLocks,
   agentRoomMessages,
+  agentRoomPrompts,
   agentRoomRooms,
   agentRoomTasks,
   appOrder,
@@ -263,12 +265,14 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
   const [roomId, setRoomId] = useState('team');
   const [draft, setDraft] = useState('');
   const [localMessages, setLocalMessages] = useState<AgentRoomMessage[]>([]);
+  const [localTasks, setLocalTasks] = useState<typeof agentRoomTasks>([]);
   const currentRoom = agentRoomRooms.find((room) => room.id === roomId) || agentRoomRooms[0];
   const visibleMessages = [...agentRoomMessages, ...localMessages].filter((message) => message.roomId === roomId);
-  const activeTasks = agentRoomTasks.filter((task) => task.status !== 'done');
-  const completedTasks = agentRoomTasks.filter((task) => task.status === 'done');
-  const approvalCount = agentRoomTasks.filter((task) => task.status === 'needs_approval').length;
-  const focusTask = agentRoomTasks.find((task) => task.status === 'needs_approval') || activeTasks[0] || agentRoomTasks[0];
+  const allTasks = [...agentRoomTasks, ...localTasks];
+  const activeTasks = allTasks.filter((task) => task.status !== 'done');
+  const completedTasks = allTasks.filter((task) => task.status === 'done');
+  const approvalCount = allTasks.filter((task) => task.status === 'needs_approval').length;
+  const focusTask = allTasks.find((task) => task.status === 'needs_approval') || activeTasks[0] || allTasks[0];
 
   const submitMessage = () => {
     const body = draft.trim();
@@ -280,6 +284,21 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
   const sendToNotes = () => {
     const transcript = visibleMessages.map((message) => `${message.author}(${message.role}): ${message.body}`).join('\n');
     localStorage.setItem('eureka-notes', `[AgentRoom/${currentRoom.name}]\n${transcript}\n\n다음 액션:\n- 담당/락/승인 상태 확인\n- 완료 시 outbox에 검증 결과 남기기`);
+    openApp('notes');
+  };
+
+  const createTaskFromDraft = () => {
+    const title = draft.trim();
+    if (!title) return;
+    const id = `LOCAL-${String(localTasks.length + 1).padStart(2, '0')}`;
+    setLocalTasks((tasks) => [...tasks, { id, title, assignee: '과메기 배정 대기', status: 'open', priority: 'normal', resource: currentRoom.name, next: '담당자 지정 후 진행' }]);
+    setLocalMessages((messages) => [...messages, { roomId, author: 'AgentRoom', role: 'Task router', tone: 'system', body: `${id} 작업 카드로 등록했습니다: ${title}` }]);
+    setDraft('');
+  };
+
+  const exportSyncSnapshot = () => {
+    const taskLines = allTasks.map((task) => `- ${task.id} [${task.status}] ${task.title} / ${task.assignee} / ${task.next}`).join('\n');
+    localStorage.setItem('eureka-notes', `[AgentRoom Sync Snapshot]\n방: ${currentRoom.name}\n활성 작업: ${activeTasks.length}\n승인 대기: ${approvalCount}\n\n${taskLines}`);
     openApp('notes');
   };
 
@@ -315,6 +334,11 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
       </div>
     </section> : null}
 
+    <section className="agentroom-quickbar" aria-label="AgentRoom quick prompts">
+      {agentRoomPrompts.map((prompt) => <button key={prompt.label} onClick={() => setDraft(prompt.text)}>{prompt.label}</button>)}
+      <button onClick={exportSyncSnapshot}>Sync 스냅샷</button>
+    </section>
+
     <section className="agentroom-shell">
       <aside className="agentroom-rooms" aria-label="Agent Room rooms">
         {agentRoomRooms.map((room) => <button className={room.id === roomId ? 'active' : ''} key={room.id} onClick={() => setRoomId(room.id)}>
@@ -337,6 +361,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
         <form className="agentroom-composer" onSubmit={(event) => { event.preventDefault(); submitMessage(); }}>
           <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="고라니 지시 입력: 예) 니은은 UI, 사다새는 배포 확인해서 완료보고" />
           <button type="submit">방에 남기기</button>
+          <button type="button" onClick={createTaskFromDraft}>작업화</button>
           <button type="button" onClick={sendToNotes}>노트로 인계</button>
         </form>
       </main>
@@ -351,8 +376,8 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
     <section className="agentroom-ops-grid" aria-label="AgentRoom task and lock board">
       <div className="agentroom-panel">
         <h3>작업 상태판</h3>
-        {agentRoomTasks.map((task) => <article className={`agentroom-task ${task.status}`} key={task.id}>
-          <header><b>{task.id}</b><span>{task.status}</span></header>
+        {allTasks.map((task) => <article className={`agentroom-task ${task.status}`} key={task.id}>
+          <header><b>{task.id}</b><span>{task.priority || 'normal'} · {task.status}</span></header>
           <strong>{task.title}</strong>
           <p>담당: {task.assignee} · 리소스: {task.resource}</p>
           <small>다음: {task.next}</small>
@@ -372,6 +397,15 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
         <p>최종 요약이 생기면 방 안에서 승인 / 수정 요청 / 거절을 바로 처리한다. GitHub push, 실제 배포, 권한 변경, 삭제, 비용 발생 작업은 고라니 승인 전 대기합니다.</p>
         <button onClick={() => openApp('terminal')}>검증 로그 보기</button>
         <button onClick={() => openApp('uniplan')}>UniPlan 방으로 이동</button>
+      </div>
+      <div className="agentroom-panel decision-panel">
+        <h3>결정 로그</h3>
+        {agentRoomDecisions.map((decision) => <article className={`agentroom-decision ${decision.status}`} key={decision.id}>
+          <header><b>{decision.id}</b><span>{decision.status}</span></header>
+          <strong>{decision.label}</strong>
+          <p>{decision.detail}</p>
+          <small>owner: {decision.owner}</small>
+        </article>)}
       </div>
     </section>
 
@@ -498,3 +532,4 @@ function GameLab() {
 }
 
 createRoot(document.getElementById('root')!).render(<App />);
+
