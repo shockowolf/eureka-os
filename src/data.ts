@@ -33,8 +33,8 @@ export const projectLinks: LinkTarget[] = [
 
 export const agentCards: AgentCard[] = [
   { name: '과메기', role: 'PM / 오케스트레이터', status: '클로징 담당', next: '최대 10라운드 안에서 결론·액션 정리', capability: '분해·배정·최종판단', accent: '#7dd3fc' },
-  { name: '니은', role: '구현 / 패치', status: 'AgentRoom UI 작업 중', next: 'UI 기능·빌드 검증·인계 기록', capability: '코드 수정·테스트', accent: '#a7f3d0' },
-  { name: '사다새', role: '서버 / 리서치', status: '배포·소스 위치 확인', next: 'GitHub/서버 상태와 충돌 위험 확인', capability: '운영·문서·서버', accent: '#fde68a' },
+  { name: '니은', role: '구현 / 패치', status: 'AgentRoom 배포 확인', next: '웹 MVP 검증 결과와 후속 Gateway/실기기 작업 인계', capability: '코드 수정·테스트', accent: '#a7f3d0' },
+  { name: '사다새', role: '서버 / 리서치', status: 'os.eureka.pe.kr 반영 완료', next: 'Gateway/Android 실기기 연결 확인 준비', capability: '운영·문서·서버', accent: '#fde68a' },
   { name: '공작', role: 'UI / 브랜드', status: '디자인 감각 보정', next: '레트로 감성은 살리고 가독성 유지', capability: '디자인 리뷰', accent: '#f0abfc' },
   { name: '고슴도치', role: '보안 / 승인', status: '위험 작업 감시', next: '삭제·권한·외부전송·비용 작업 승인 게이트', capability: '리스크 체크', accent: '#fb7185' },
 ];
@@ -51,7 +51,7 @@ export const agentRoomRooms: AgentRoomRoom[] = [
   { id: 'team', name: 'AgentRoom 전략실', meta: '단체방 · 10라운드 프로토콜', purpose: '고라니가 짧게 지시하면 AI들이 작업으로 바꾸고 맡아 처리하는 기본 방', health: 'active' },
   { id: 'agentroom-dev', name: 'AgentRoom 개발방', meta: 'Eureka OS · MVP', purpose: '앱 화면, 빌드, 배포, 동기화 방식을 검증하는 개발방', health: 'review' },
   { id: 'uniplan', name: 'UniPlan 사업방', meta: 'AI ERP/AX', purpose: 'ERP 업무 흐름을 새 이름·새 구조·새 UX로 재해석하는 방', health: 'quiet' },
-  { id: 'ops', name: '서버/배포 상황실', meta: '사다새 · 비버', purpose: '도메인, 컨테이너, GitHub, 배포 체크를 모으는 방', health: 'blocked' },
+  { id: 'ops', name: '서버/배포 상황실', meta: '사다새 · 비버', purpose: '도메인, 컨테이너, GitHub, 배포 체크를 모으는 방', health: 'active' },
 ];
 
 export const agentRoomMessages: AgentRoomMessage[] = [
@@ -62,23 +62,25 @@ export const agentRoomMessages: AgentRoomMessage[] = [
   { roomId: 'team', author: '과메기', role: 'PM · R10', tone: 'decision', body: '클로징: chat-first는 유지하되 Summary, TODO, Decision, Approval을 방 상세의 1급 정보로 올린다.' },
   { roomId: 'agentroom-dev', author: '니은', role: '구현', tone: 'agent', body: 'GitHub shockowolf/eureka-os 안에 AgentRoom 화면이 있음을 확인. 웹 MVP를 완성형으로 보강 중입니다.' },
   { roomId: 'agentroom-dev', author: '사다새', role: '서버', tone: 'system', body: '이전 Oracle 검색에서는 앱 소스가 미발견이었고, GitHub 확인 후 eureka-os 경로가 기준 후보가 되었습니다.' },
+  { roomId: 'agentroom-dev', author: '니은', role: '배포', tone: 'system', body: 'os.eureka.pe.kr에는 GitHub main 최신 AgentRoom 빌드가 반영되었고, 정적 파일 백업과 공개 URL 검증까지 완료했습니다.' },
   { roomId: 'uniplan', author: '고라니', role: 'Owner', tone: 'user', body: 'easiERP/erpGOOTZ는 복제 운영이 아니라 UniPlan 설계를 위한 업무 흐름 참고 자료다.' },
   { roomId: 'uniplan', author: '니은', role: '정리', tone: 'decision', body: '명칭·코드·표현을 그대로 가져오지 않고 새 기능명/새 구조/AI ERP UX로 변환한다.' },
   { roomId: 'ops', author: '사다새', role: '서버', tone: 'system', body: 'm1max SSH는 현재 키 권한이 없어 직접 접근 불가. GitHub 공개 저장소 기준으로 작업한다.' },
 ];
 
 export const agentRoomTasks: AgentRoomTask[] = [
-  { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'done', priority: 'high', resource: 'eureka-os/src/*', next: '웹 MVP UI는 반영 완료. 실기기/Gateway 연결은 후속 검증', finalSummary: 'chat-first 작업방을 유지하면서 R10 최종 요약, TODO, 최근 결정, 승인 CTA를 방 안에서 바로 보이게 만든다.', approvalState: 'approved', todos: ['S25 실기기에서 키보드/스크롤/Gateway 연결 확인', '외부 배포 전 Tailscale 기본값과 Android 권한 분리', '승인 이벤트를 모바일 승인 큐와 연결'], decisions: ['AgentRoom은 상시 회의실이 아니라 필요할 때 켜지는 AI 작업 콘솔로 간다.', '고정 멤버보다 capability 기반 담당자 라우팅을 우선한다.'] },
+  { id: 'AR-001', title: 'AgentRoom MVP 화면 완성', assignee: '니은', status: 'done', priority: 'high', resource: 'eureka-os/src/*', next: '웹 MVP UI와 공개 배포는 완료. 실기기/Gateway 연결은 후속 검증', finalSummary: 'chat-first 작업방을 유지하면서 R10 최종 요약, TODO, 최근 결정, 승인 CTA를 방 안에서 바로 보이게 만든다.', approvalState: 'approved', todos: ['S25 실기기에서 키보드/스크롤/Gateway 연결 확인', 'Android 권한과 Tailscale/Gateway 기본값 분리', '승인 이벤트를 모바일 승인 큐와 연결'], decisions: ['AgentRoom은 상시 회의실이 아니라 필요할 때 켜지는 AI 작업 콘솔로 간다.', '고정 멤버보다 capability 기반 담당자 라우팅을 우선한다.'] },
   { id: 'AR-002', title: 'GitHub 원본 위치 확인', assignee: '니은+사다새', status: 'done', priority: 'normal', resource: 'shockowolf/eureka-os', next: '로컬 작업본 기준으로 검증' },
   { id: 'AR-003', title: 'GitHub 커밋/푸시', assignee: '사다새+니은', status: 'done', priority: 'high', resource: 'github main', next: 'AgentRoom 리뷰 수정까지 main 반영 완료. 이후 변경은 새 작업 카드로 진행' },
   { id: 'AR-004', title: 'm1max 작업본 확인', assignee: '사다새', status: 'blocked', priority: 'normal', resource: 'tailscale:ssh m1max', next: 'SSH 키 또는 저장소 위치 필요' },
-  { id: 'AR-005', title: '실서비스 배포 승인', assignee: '고라니+사다새', status: 'needs_approval', priority: 'high', resource: 'os.eureka.pe.kr deploy', next: '배포 대상/롤백/검증 로그 확인 후 별도 승인' },
+  { id: 'AR-005', title: '실서비스 배포', assignee: '니은', status: 'done', priority: 'high', resource: 'os.eureka.pe.kr deploy', next: '배포 완료. 롤백 백업 보관 중, 다음은 Android 실기기/Gateway 검증' },
 ];
 
 export const agentRoomLocks: AgentRoomLock[] = [
   { resource: 'eureka-os/src/*', holder: '사다새', mode: 'shared', until: '다음 UI 변경 전까지', reason: 'AgentRoom 변경분 리뷰 기준' },
   { resource: 'bot-collab/status.md,outbox.md', holder: '니은+사다새', mode: 'shared', until: '작업 종료', reason: '새 협업 로그만 추가' },
-  { resource: 'github main', holder: 'released', mode: 'shared', until: '다음 배포 전까지', reason: 'GitHub 반영 완료 이력과 후속 변경 기준' },
+  { resource: 'github main', holder: 'released', mode: 'shared', until: '다음 변경 전까지', reason: 'GitHub 반영 완료 이력과 후속 변경 기준' },
+  { resource: 'os.eureka.pe.kr static dist', holder: 'released', mode: 'shared', until: '다음 배포 전까지', reason: 'AgentRoom 공개 배포 완료 및 롤백 백업 확보' },
 ];
 
 export const agentRoomDecisions: AgentRoomDecision[] = [
@@ -86,6 +88,7 @@ export const agentRoomDecisions: AgentRoomDecision[] = [
   { id: 'D-002', label: 'Bot-only workspace', owner: '고라니', status: 'decided', detail: '사람끼리 메신저가 아니라 고라니와 AI 작업자들이 쓰는 작업방이다.' },
   { id: 'D-003', label: '승인 게이트', owner: '고슴도치', status: 'decided', detail: '삭제/권한/외부전송/비용/배포는 승인 카드가 필요하다.' },
   { id: 'D-004', label: '실시간 sync 연결', owner: '사다새', status: 'pending', detail: 'BOT_COLLAB_SYNC.md 또는 API를 읽어 앱 상태판에 연결한다.' },
+  { id: 'D-005', label: '웹 MVP 공개 배포', owner: '니은', status: 'decided', detail: 'Eureka OS의 AgentRoom 최신 정적 빌드를 os.eureka.pe.kr에 반영하고 공개 URL/asset smoke check를 통과했다.' },
 ];
 
 export const agentRoomPrompts: AgentRoomPrompt[] = [
