@@ -314,8 +314,8 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-ops-grid { display: grid; grid-template-columns: 1.25fr 1fr .85fr 1fr; gap: 12px; }
 .agentroom-panel { display: grid; align-content: start; gap: 9px; padding: 12px; }
 .agentroom-panel h3 { margin: 0; }
-.agentroom-task, .agentroom-lock, .agentroom-decision { display: grid; gap: 5px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.18); border-left: 4px solid #94a3b8; }
-.agentroom-task header, .agentroom-lock header, .agentroom-decision header { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
+.agentroom-task, .agentroom-lock, .agentroom-decision, .agentroom-trigger { display: grid; gap: 5px; padding: 10px; border-radius: 12px; background: rgba(2,6,23,.18); border-left: 4px solid #94a3b8; }
+.agentroom-task header, .agentroom-lock header, .agentroom-decision header, .agentroom-trigger header { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; }
 .agentroom-task.in_progress { border-left-color: #7dd3fc; }
 .agentroom-task.done { border-left-color: #86efac; }
 .agentroom-task.blocked { border-left-color: #fca5a5; }
@@ -325,9 +325,13 @@ time { padding: 0 12px; font-variant-numeric: tabular-nums; }
 .agentroom-decision.decided { border-left-color: #86efac; }
 .agentroom-decision.pending { border-left-color: #fde68a; }
 .agentroom-decision.blocked { border-left-color: #fca5a5; }
+.agentroom-trigger.ready, .agentroom-trigger.done { border-left-color: #86efac; }
+.agentroom-trigger.needs_hook { border-left-color: #fde68a; }
+.agentroom-trigger code { display: block; padding: 7px 8px; border-radius: 8px; background: rgba(2,6,23,.36); color: #bfdbfe; font: 700 11px 'SFMono-Regular', Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+.agentroom-task button { justify-self: start; margin-top: 4px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 10px; background: rgba(134,239,172,.14); cursor: pointer; color: inherit; }
 .approval-panel { background: linear-gradient(135deg, rgba(253,230,138,.14), rgba(251,113,133,.1)); }
 .theme-classic-gray .agentroom-hero, .theme-classic-gray .agentroom-focus-card, .theme-classic-gray .agentroom-rooms, .theme-classic-gray .agentroom-chat, .theme-classic-gray .agentroom-agents, .theme-classic-gray .agentroom-panel { background: #fff; border-color: #94a3b8; }
-.theme-classic-gray .agentroom-metrics span, .theme-classic-gray .agentroom-task, .theme-classic-gray .agentroom-lock, .theme-classic-gray .agentroom-decision, .theme-classic-gray .agentroom-quickbar { background: #f8fafc; }
+.theme-classic-gray .agentroom-metrics span, .theme-classic-gray .agentroom-task, .theme-classic-gray .agentroom-lock, .theme-classic-gray .agentroom-decision, .theme-classic-gray .agentroom-trigger, .theme-classic-gray .agentroom-quickbar { background: #f8fafc; }
 .theme-classic-gray .agentroom-metrics b { color: #0369a1; }
 .theme-classic-gray .agentroom-focus-card p, .theme-classic-gray .agentroom-rooms span, .theme-classic-gray .agentroom-agents span, .theme-classic-gray .agentroom-chat header span, .theme-classic-gray .agentroom-chat header p, .theme-classic-gray .agentroom-composer input, .theme-classic-gray .agentroom-agents small, .theme-classic-gray .agentroom-task small, .theme-classic-gray .agentroom-lock small, .theme-classic-gray .agentroom-decision small { color: #475569; }
 .theme-classic-gray .agentroom-composer input { background: #f8fafc; }

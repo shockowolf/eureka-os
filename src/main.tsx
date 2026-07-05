@@ -6,6 +6,7 @@ import type { AgentRoomMessage, AppId, DosLauncher, DosPlayer, DragState, GameRe
 import {
   agentCards,
   agentRoomDecisions,
+  agentRoomFileTriggers,
   agentRoomLocks,
   agentRoomMessages,
   agentRoomPrompts,
@@ -307,6 +308,13 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
     setDraft('');
   };
 
+  const markTaskDone = (id: string) => {
+    setLocalTasks((tasks) => tasks.map((task) => task.id === id ? { ...task, status: 'done', next: '완료 상태 기록됨', finalSummary: task.finalSummary || '로컬 작업 카드가 완료 처리되었습니다.' } : task));
+    setLocalMessages((messages) => [...messages, { roomId, author: 'AgentRoom', role: 'Completion trigger', tone: 'decision', body: `${id} 상태를 done으로 기록했습니다. 실제 큐 항목도 완료 시 status: done과 검증 결과를 남겨야 합니다.` }]);
+  };
+
+  const queueCommandFor = (bot: string) => `python3 scripts/check-bot-queue.py list --bot ${bot} --include-unassigned`;
+
   const exportSyncSnapshot = () => {
     const taskLines = allTasks.map((task) => `- ${task.id} [${task.status}] ${task.title} / ${task.assignee} / ${task.next}`).join('\n');
     saveAgentRoomNote(`[AgentRoom Sync Snapshot]\n방: ${currentRoom.name}\n활성 작업: ${activeTasks.length}\n승인 대기: ${approvalCount}\n\n${taskLines}`);
@@ -346,6 +354,8 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
 
     <section className="agentroom-quickbar" aria-label="AgentRoom quick prompts">
       {agentRoomPrompts.map((prompt) => <button key={prompt.label} onClick={() => setDraft(prompt.text)}>{prompt.label}</button>)}
+      <button onClick={() => setDraft(queueCommandFor('과메기'))}>과메기 큐 확인</button>
+      <button onClick={() => setDraft(queueCommandFor('사다새'))}>사다새 큐 확인</button>
       <button onClick={exportSyncSnapshot}>Sync 스냅샷</button>
     </section>
 
@@ -391,6 +401,7 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
           <strong>{task.title}</strong>
           <p>담당: {task.assignee} · 리소스: {task.resource}</p>
           <small>다음: {task.next}</small>
+          {task.id.startsWith('LOCAL-') && task.status !== 'done' ? <button onClick={() => markTaskDone(task.id)}>완료 상태 찍기</button> : null}
         </article>)}
       </div>
       <div className="agentroom-panel">
@@ -400,6 +411,17 @@ function AgentRoomApp({ openApp }: { openApp: (id: AppId) => void }) {
           <strong>{lock.resource}</strong>
           <p>{lock.reason}</p>
           <small>유효: {lock.until}</small>
+        </article>)}
+      </div>
+      <div className="agentroom-panel trigger-panel">
+        <h3>파일 변경 호출 트리거</h3>
+        <p>파일이 바뀌면 연결된 봇이 자기 큐와 해당 파일을 확인하는 방식입니다. 완료되면 큐 항목 status를 done으로 남깁니다.</p>
+        {agentRoomFileTriggers.map((trigger) => <article className={`agentroom-trigger ${trigger.status}`} key={trigger.id}>
+          <header><b>{trigger.id}</b><span>{trigger.status}</span></header>
+          <strong>{trigger.bots.join(' · ')}</strong>
+          <p>{trigger.reason}</p>
+          <small>파일: {trigger.patterns.join(', ')}</small>
+          <code>{trigger.command}</code>
         </article>)}
       </div>
       <div className="agentroom-panel approval-panel">

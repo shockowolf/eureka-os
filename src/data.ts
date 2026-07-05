@@ -1,4 +1,4 @@
-import type { AgentCard, AgentRoomDecision, AgentRoomLock, AgentRoomMessage, AgentRoomPrompt, AgentRoomRoom, AgentRoomTask, AppId, AppMeta, LinkTarget, WindowState, WorkCard } from './types';
+import type { AgentCard, AgentRoomDecision, AgentRoomFileTrigger, AgentRoomLock, AgentRoomMessage, AgentRoomPrompt, AgentRoomRoom, AgentRoomTask, AppId, AppMeta, LinkTarget, WindowState, WorkCard } from './types';
 
 // Static product metadata for the desktop shell. Dynamic/runtime state should stay in components.
 export const apps: Record<AppId, AppMeta> = {
@@ -94,7 +94,42 @@ export const agentRoomDecisions: AgentRoomDecision[] = [
 export const agentRoomPrompts: AgentRoomPrompt[] = [
   { label: '팀 모드 시작', text: '팀 모드 시작: 과메기는 작업을 쪼개고, 니은은 구현, 사다새는 서버/배포 확인, 마지막에 검증 결과까지 정리해줘.' },
   { label: '승인 요청', text: '승인 요청: 외부 반영이 필요한 작업입니다. 대상, 위험도, 롤백 방법, 검증 결과를 먼저 정리해줘.' },
-  { label: '완료 보고', text: '완료 보고: 한 일, 검증 결과, 변경 파일, 남은 블로커, 다음 액션을 5줄로 정리해줘.' },
+  { label: '완료 보고', text: '완료 보고: 한 일, 검증 결과, 변경 파일, 남은 블로커, 다음 액션을 5줄로 정리해줘. 완료된 큐 항목은 status를 done으로 바꿔줘.' },
+];
+
+export const agentRoomFileTriggers: AgentRoomFileTrigger[] = [
+  {
+    id: 'queue-updated',
+    patterns: ['04_Backlog/Bot Collaboration Queue.md'],
+    bots: ['니은', '사다새', '과메기'],
+    reason: '공용 큐가 바뀌면 각자 자기 담당 active 항목을 확인한다.',
+    status: 'ready',
+    command: 'python3 scripts/check-bot-queue.py list --bot <BOT> --include-unassigned',
+  },
+  {
+    id: 'bot-protocol-updated',
+    patterns: ['02_Systems/공용 봇 협업 큐 운영.md', 'scripts/check-*.py'],
+    bots: ['니은', '사다새', '과메기'],
+    reason: '협업 프로토콜이나 helper가 바뀌면 로컬 트리거 설정을 재확인한다.',
+    status: 'ready',
+    command: 'python3 scripts/check-file-triggers.py check --bot <BOT>',
+  },
+  {
+    id: 'idkbi-updated',
+    patterns: ['01_Projects/idkbi.md', '07_References/*도깨비*'],
+    bots: ['과메기', '니은'],
+    reason: 'idkbi/도깨비 컨셉 변경 시 Starweave와 섞이지 않았는지 확인한다.',
+    status: 'needs_hook',
+    command: 'python3 scripts/check-file-triggers.py changed --bot <BOT> --files <FILE>',
+  },
+  {
+    id: 'starweave-updated',
+    patterns: ['01_Projects/Starweave.md', '07_References/브랜드와 문구 가이드.md'],
+    bots: ['니은'],
+    reason: '성연당 변경 시 도깨비/idkbi가 섞이지 않았는지 확인한다.',
+    status: 'needs_hook',
+    command: 'python3 scripts/check-file-triggers.py changed --bot 니은 --files <FILE>',
+  },
 ];
 
 export const launcherActions: Record<AppId, string> = {

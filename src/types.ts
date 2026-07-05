@@ -16,6 +16,7 @@ export type AgentRoomTask = { id: string; title: string; assignee: string; statu
 export type AgentRoomLock = { resource: string; holder: string; mode: 'shared' | 'exclusive'; until: string; reason: string };
 export type AgentRoomDecision = { id: string; label: string; owner: string; detail: string; status: 'decided' | 'pending' | 'blocked' };
 export type AgentRoomPrompt = { label: string; text: string };
+export type AgentRoomFileTrigger = { id: string; patterns: string[]; bots: string[]; reason: string; status: 'ready' | 'needs_hook' | 'done'; command: string };
 
 // js-dos is loaded at runtime from /public/js-dos instead of bundled by Vite.
 // The public API is intentionally minimal here because Eureka OS only needs start/stop/save hooks.
