@@ -1,5 +1,5 @@
 export type Theme = 'classic-gray' | 'meadow-blue' | 'atelier';
-export type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'terminal' | 'settings';
+export type AppId = 'agentroom' | 'uniplan' | 'documents' | 'notes' | 'gamelab' | 'terminal' | 'settings' | 'usage';
 
 // Shared view-model types. Keep these UI-focused; avoid coupling them to server/API shapes.
 export type AppMeta = { title: string; icon: string; accent: string; summary: string };

@@ -1,6 +1,7 @@
 import React, { ChangeEvent, PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
+import { UsageConsoleApp } from './usage/UsageConsoleApp';
 
 import type { AgentRoomMessage, AppId, DosLauncher, DosPlayer, DragState, GameRegistryItem, Theme, WindowState } from './types';
 import {
@@ -51,8 +52,8 @@ function App() {
       const top = Math.max(0, ...current.map((w) => w.z));
       const existing = current.find((w) => w.id === id);
       if (existing) return current.map((w) => (w.id === id ? { ...w, minimized: false, z: top + 1 } : w));
-      const offset = current.length * 5;
-      return [...current, { id, z: top + 1, x: 18 + offset, y: 18 + offset }];
+      const offset = Math.min(20, current.length * 5);
+      return [...current, { id, z: top + 1, x: 30 + offset, y: 15 + offset }];
     });
     setStartOpen(false);
   };
@@ -87,7 +88,7 @@ function App() {
         return;
       }
 
-      if (event.altKey && /^[1-7]$/.test(event.key)) {
+      if (event.altKey && /^[1-8]$/.test(event.key)) {
         event.preventDefault();
         openApp(appOrder[Number(event.key) - 1]);
         return;
@@ -209,7 +210,7 @@ function PixelOffice() {
 function StartMenu({ openApp }: { openApp: (id: AppId) => void }) {
   return <aside className="start-menu" role="menu">
     <strong>Eureka Launcher</strong>
-    <p>오늘 열 작업을 고르세요 · Alt+1~7</p>
+    <p>오늘 열 작업을 고르세요 · Alt+1~8</p>
     {appOrder.map((id, index) => <button role="menuitem" key={id} onClick={() => openApp(id)}><span>{apps[id].icon}</span>{launcherActions[id]}<small>Alt+{index + 1}</small></button>)}
   </aside>;
 }
@@ -222,6 +223,7 @@ function WindowContent({ id, theme, setTheme, openApp }: { id: AppId; theme: The
   if (id === 'gamelab') return <GameLab />;
   if (id === 'agentroom') return <AgentRoomApp openApp={openApp} />;
   if (id === 'uniplan') return <UniPlanApp openApp={openApp} />;
+  if (id === 'usage') return <UsageConsoleApp />;
   return null;
 }
 
@@ -230,7 +232,7 @@ function Settings({ theme, setTheme }: { theme: Theme; setTheme: (theme: Theme) 
 }
 
 function Terminal() {
-  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr /><p>shortcuts: Ctrl/⌘+K launcher · Alt+1~7 apps</p><p>window: Ctrl/⌘+Enter maximize · Ctrl/⌘+M minimize · Ctrl/⌘+W close</p><p>session-log: disabled</p><p>notes: Telegram/session workaround artifacts were removed.</p></div>;
+  return <div className="content terminal"><p>$ boot eureka-os</p><p>status: responsive workspace ready</p><p>stack: React + Vite + custom UI</p><p>domain: os.eureka.pe.kr</p><p>github: shockowolf/eureka-os</p><p>game-lab: safe registry shell enabled</p><hr /><p>shortcuts: Ctrl/⌘+K launcher · Alt+1~8 apps</p><p>window: Ctrl/⌘+Enter maximize · Ctrl/⌘+M minimize · Ctrl/⌘+W close</p><p>session-log: disabled</p><p>notes: Telegram/session workaround artifacts were removed.</p></div>;
 }
 
 function Documents({ openApp }: { openApp: (id: AppId) => void }) {

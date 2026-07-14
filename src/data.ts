@@ -9,15 +9,13 @@ export const apps: Record<AppId, AppMeta> = {
   gamelab: { title: 'Game Lab', icon: '▦', accent: '#fb7185', summary: '권리 확인된 js-dos 번들만 등록해 실행하는 레트로 게임 연구실입니다.' },
   terminal: { title: '시스템 로그', icon: '▸', accent: '#86efac', summary: 'Terminal: Eureka OS 상태와 빌드 로그를 보여줍니다.' },
   settings: { title: '분위기 설정', icon: '◌', accent: '#c4b5fd', summary: 'Settings: 테마와 데스크톱 분위기를 조절합니다.' },
+  usage: { title: '모델 사용량', icon: '◴', accent: '#67e8f9', summary: 'AI 사용량 관제: 저장된 토큰 기록과 필요할 때 확인하는 업체 잔여량을 분리해서 봅니다.' },
 };
 
 export const appOrder = Object.keys(apps) as AppId[];
 
-// Initial boot layout: open status + Agent Room so the page immediately feels alive.
-export const initialWindows: WindowState[] = [
-  { id: 'terminal', z: 2, x: 12, y: 16 },
-  { id: 'agentroom', z: 1, x: 38, y: 25 },
-];
+// Boot to an uncluttered desktop; apps are intentionally opened by the user.
+export const initialWindows: WindowState[] = [];
 
 export const defaultNote = '오늘의 작업\n- AgentRoom: 방/작업/락/승인/인계 UI 검증\n- UniPlan: ERP 업무 흐름을 새 구조로 재해석\n- Eureka OS: os.eureka.pe.kr 배포 상태 확인';
 
@@ -140,5 +138,6 @@ export const launcherActions: Record<AppId, string> = {
   gamelab: '게임 연구실',
   terminal: '시스템 로그',
   settings: '테마 바꾸기',
+  usage: '모델 사용량 보기',
 };
 
