@@ -23,9 +23,19 @@ is_local_host() {
 }
 
 if is_local_host "$HOST" && [[ -d "$(dirname "$LOCAL_TARGET")" ]]; then
+  # Publish immutable assets before switching the HTML entrypoint. This avoids a
+  # brief broken page where a new index.html references assets not yet present.
+  parent_dir=$(dirname "$LOCAL_TARGET")
+  staging_dir=$(mktemp -d "$parent_dir/.eureka-os-release.XXXXXX")
+  trap 'rm -rf "$staging_dir"' EXIT
+
+  rsync -a --delete dist/ "$staging_dir/"
+  test -f "$staging_dir/index.html"
   mkdir -p "$LOCAL_TARGET"
-  rsync -a --delete dist/ "$LOCAL_TARGET/"
-  echo "deployed locally to $LOCAL_TARGET"
+  rsync -a --exclude=index.html "$staging_dir/" "$LOCAL_TARGET/"
+  install -m 0644 "$staging_dir/index.html" "$LOCAL_TARGET/.index.html.next"
+  mv -f "$LOCAL_TARGET/.index.html.next" "$LOCAL_TARGET/index.html"
+  echo "deployed locally to $LOCAL_TARGET (assets first, index.html switched last)"
 else
   tar -czf /tmp/eureka-os-dist.tgz -C dist .
   scp /tmp/eureka-os-dist.tgz "$USER@$HOST:/tmp/eureka-os-dist.tgz"
